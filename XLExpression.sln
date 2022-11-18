@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XLExpression", "XLExpression\XLExpression.csproj", "{BECCEDD1-800C-49DE-A650-A67E6B817002}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XLExpression.Test", "XLExpression.Test\XLExpression.Test.csproj", "{3788AFFE-45AD-48ED-B779-D0A78202FE66}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BECCEDD1-800C-49DE-A650-A67E6B817002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BECCEDD1-800C-49DE-A650-A67E6B817002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BECCEDD1-800C-49DE-A650-A67E6B817002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BECCEDD1-800C-49DE-A650-A67E6B817002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3788AFFE-45AD-48ED-B779-D0A78202FE66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3788AFFE-45AD-48ED-B779-D0A78202FE66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3788AFFE-45AD-48ED-B779-D0A78202FE66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3788AFFE-45AD-48ED-B779-D0A78202FE66}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59094FB1-128C-4346-ADB2-6F23878873F6}
+	EndGlobalSection
+EndGlobal
