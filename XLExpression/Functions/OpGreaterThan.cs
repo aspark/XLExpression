@@ -11,7 +11,12 @@ namespace XLExpression.Functions
     {
         public object? Invoke(object[] args)
         {
-            return args;
+            if (args?.Length == 2)
+            {
+                return Convert.ToDecimal(args[0]) > Convert.ToDecimal(args[1]);
+            }
+
+            throw new ArgumentException("参数错误");
         }
     }
 }

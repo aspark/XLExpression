@@ -31,7 +31,7 @@ namespace XLExpression.Functions
                 return b ? args[1] : args[2];
             }
 
-            return null;
+            throw new ArgumentException("参数错误");
         }
     }
 }
