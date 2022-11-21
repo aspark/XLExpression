@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -28,6 +29,17 @@ namespace XLExpression
         public object Invoke(Dictionary<string, object>? args = null)
         {
             return this.Invoke(args != null ? new FunctionDataContext(args!) : null);
+        }
+
+        public object Invoke(object args)
+        {
+            var ctx = new FunctionDataContext();
+            foreach(PropertyDescriptor property in TypeDescriptor.GetProperties(args))
+            {
+                ctx[property.Name] = property.GetValue(args);
+            }
+
+            return this.Invoke(ctx);
         }
 
         public object Invoke(IFunctionDataContext? dataContext)

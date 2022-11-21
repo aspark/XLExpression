@@ -18,10 +18,26 @@ namespace XLExpression
 
         public static decimal TryToDecimal(this object? obj)
         {
-            if(obj == null) 
+            if (obj == null)
                 return 0;
 
+            if (obj.GetType() == typeof(decimal))
+                return (decimal)obj;
+
             decimal.TryParse(obj.ToString(), out decimal result);
+
+            return result;
+        }
+
+        public static double TryToDouble(this object? obj)
+        {
+            if (obj == null)
+                return 0;
+
+            if (obj.GetType() == typeof(double))
+                return (double)obj;
+
+            double.TryParse(obj.ToString(), out double result);
 
             return result;
         }

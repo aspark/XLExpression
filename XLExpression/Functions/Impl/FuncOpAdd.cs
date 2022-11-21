@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Text;
 
-namespace XLExpression.Functions
+namespace XLExpression.Functions.Impl
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "+")]
-    internal class OpAdd : FunctionBase, IFunction
+    internal class FuncOpAdd : FunctionBase, IFunction
     {
-        public object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
-            args = base.UnwarpArgs(dataContext, args);
+            args = UnwarpArgs(dataContext, args);
 
             if (args.Length == 1)
             {
@@ -20,7 +20,7 @@ namespace XLExpression.Functions
             }
             else if (args.Length == 2)
             {
-                if(args[0] is string || args[1] is string)
+                if (args[0] is string || args[1] is string)
                 {
                     return args[0].ToString() + args[1].ToString();
                 }

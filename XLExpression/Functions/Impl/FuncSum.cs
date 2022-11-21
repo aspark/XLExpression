@@ -4,22 +4,22 @@ using System.ComponentModel.Composition;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace XLExpression.Functions
+namespace XLExpression.Functions.Impl
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "sum")]
-    internal class FuncSum: FunctionBase, IFunction
+    internal class FuncSum : FunctionBase, IFunction
     {
-        public object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
-            var realArgs = base.UnwarpArgs(dataContext, args);
+            var realArgs = UnwarpArgs(dataContext, args);
 
             if (realArgs?.Length > 0)
             {
                 decimal sum = 0;
-                foreach(var arg in realArgs)
+                foreach (var arg in realArgs)
                 {
-                    if(arg is object[,] range)
+                    if (arg is object[,] range)
                     {
                         for (var r = 0; r < range.GetLength(0); r++)
                         {

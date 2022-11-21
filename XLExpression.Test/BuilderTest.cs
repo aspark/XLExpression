@@ -3,7 +3,7 @@ using XLParser;
 
 namespace XLExpression.Test
 {
-    public class ExpressionBuilderTest
+    public class BuilderTest
     {
         [Fact]
         public void ConvertToNodeTest1()

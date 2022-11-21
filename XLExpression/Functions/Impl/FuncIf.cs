@@ -4,15 +4,15 @@ using System.ComponentModel.Composition;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace XLExpression.Functions
+namespace XLExpression.Functions.Impl
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "if")]
-    internal class FuncIf: FunctionBase, IFunction
+    internal class FuncIf : FunctionBase, IFunction
     {
-        public object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
-            args = base.UnwarpArgs(dataContext, args);
+            args = UnwarpArgs(dataContext, args);
 
             if (args?.Length == 3)
             {

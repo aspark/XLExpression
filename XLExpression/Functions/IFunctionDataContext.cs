@@ -25,6 +25,11 @@ namespace XLExpression.Functions
     {
         ConcurrentDictionary<int, FunctionDataRow> _rows = new ConcurrentDictionary<int, FunctionDataRow>();
 
+        public FunctionDataContext()
+        {
+
+        }
+
         public FunctionDataContext(FunctionDataRow row)
         {
             _rows[0] = row;
