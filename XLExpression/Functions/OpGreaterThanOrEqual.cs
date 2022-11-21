@@ -7,10 +7,12 @@ namespace XLExpression.Functions
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", ">=")]
-    internal class OpGreaterThanOrEqual : IFunction
+    internal class OpGreaterThanOrEqual : FunctionBase, IFunction
     {
-        public object? Invoke(object[] args)
+        public object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
+            args = base.UnwarpArgs(dataContext, args);
+
             if (args?.Length == 2)
             {
                 return Convert.ToDecimal(args[0]) >= Convert.ToDecimal(args[1]);

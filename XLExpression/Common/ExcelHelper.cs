@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace XLExpression.Common
+{
+    internal class ExcelHelper
+    {
+        private static List<char> colNames = new List<char> { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+        /// <summary>
+        /// 将Excel坐标转为数字
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static (int col, int row) ConvertNameToPosition(string name)
+        {
+            //var chars = new char[]
+            var m = Regex.Match(name, @"(?<col>[A-Z]+)(?<row>[0-9]*)");
+            var col = 0;
+            var row = 0;
+            if (m.Success)
+            {
+                var colName = m.Groups["col"].Value;
+                for (int i = 0; i < colName.Length; i++)
+                {
+                    col += ((int)Math.Pow(colNames.Count, colName.Length - 1 - i) * (colNames.IndexOf(colName[i]) + 1));
+                }
+
+                if (col > 0)
+                    col -= 1;
+
+                if (int.TryParse(m.Groups["row"].Value, out row))
+                    row -= 1;
+            }
+
+            return (col, row);
+        }
+
+        /// <summary>
+        /// 将数字转为Excel坐标
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public string ConvertIndexToName(int col, int row)
+        {
+            return ConvertIndexToName(col) + row;
+        }
+
+        /// <summary>
+        /// 将数字转为Excel坐标
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public string ConvertIndexToName(int col)
+        {
+            var colName = "";
+            var quotient = col;
+            while ((quotient = Math.DivRem(quotient, colNames.Count, out int rem)) > 0)
+            {
+                colName = colNames[rem] + colName;
+            }
+
+            return colName;
+        }
+
+    }
+}

@@ -25,7 +25,7 @@ namespace XLExpression
         public static FunctionFactory Instance => new FunctionFactory();
 
         [ImportMany(typeof(IFunction))]
-        private List<Lazy<IFunction, IFunctionData>> _functions = null;
+        private List<Lazy<IFunction, IFunctionMetadata>> _functions = null;
 
         public IFunction? GetOperator(string name)
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using XLExpression.Common;
 using XLExpression.Functions;
 using XLExpression.Nodes;
 using XLParser;
@@ -27,9 +28,9 @@ namespace XLExpression
         /// <returns></returns>
         public ExpressionResult Build(string formula)
         {
-            var names = new Dictionary<string, ParameterExpression>(StringComparer.InvariantCultureIgnoreCase);
+            var parameters = new Dictionary<string, ParameterExpression>(StringComparer.InvariantCultureIgnoreCase);
 
-            var result = new ExpressionResult(Build(ConvertToNode(formula), ref names)) { Args = names.Values.ToArray() };
+            var result = new ExpressionResult(Build(ConvertToNode(formula), ref parameters)) { Args = parameters.Values.ToArray() };
 
             return result;
         }
@@ -46,7 +47,7 @@ namespace XLExpression
             return Build(ConvertToNode(formula), ref names)?.ToString() ?? "";
         }
 
-        private Expression? Build(ExpressionNode? node, ref Dictionary<string, ParameterExpression> cellNames)
+        private Expression? Build(ExpressionNode? node, ref Dictionary<string, ParameterExpression> parameters)
         {
             if (node != null)
             {
@@ -56,13 +57,14 @@ namespace XLExpression
                     var arguments = new List<Expression?>();
                     foreach(var arg in fnNode.Arguments)
                     {
-                        arguments.Add(Build(arg, ref cellNames));
+                        arguments.Add(Build(arg, ref parameters));
                     }
 
                     var fcInstance = Expression.Property(null, typeof(FunctionFactory).GetProperty(nameof(FunctionFactory.Instance)));
                     var fnOperator = Expression.Call(fcInstance, typeof(FunctionFactory).GetMethod(nameof(FunctionFactory.GetOperator)), Expression.Constant(fnNode.Name));//Factory.Instance.GetOperator("").Invoke(object[])
+                    var dataContext = parameters.GetOrAdd("dataContext", () => Expression.Parameter(typeof(IFunctionDataContext), "dataContext"));
 
-                    return Expression.Call(fnOperator, typeof(IFunction).GetMethod(nameof(IFunction.Invoke)), Expression.NewArrayInit(typeof(object), arguments.ToArray()));
+                    return Expression.Call(fnOperator, typeof(IFunction).GetMethod(nameof(IFunction.Invoke)), dataContext, Expression.NewArrayInit(typeof(object), arguments.ToArray()));
                 }
                 else if (node.Type == NodeType.Const)
                 {
@@ -74,16 +76,7 @@ namespace XLExpression
                     var refNode = node as RefNode;
 
                     var paraName = refNode!.Name;
-                    ParameterExpression parameter = null;
-                    if (cellNames.ContainsKey(paraName))
-                    {
-                        parameter = cellNames[paraName];
-                    }
-                    else
-                    {
-                        parameter = Expression.Parameter(typeof(object), paraName);
-                        cellNames.Add(paraName, parameter);
-                    }
+                    ParameterExpression? parameter = parameters.GetOrAdd(paraName, () => Expression.Parameter(typeof(FuncRefArg), paraName));
 
                     return parameter;
                 }

@@ -7,10 +7,12 @@ namespace XLExpression.Functions
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "-")]
-    internal class OpMinus : IFunction
+    internal class OpMinus : FunctionBase, IFunction
     {
-        public object? Invoke(object[] args)
+        public object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
+            args = base.UnwarpArgs(dataContext, args);
+
             if (args.Length == 1)
             {
                 //取负

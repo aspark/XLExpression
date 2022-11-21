@@ -7,10 +7,12 @@ namespace XLExpression.Functions
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "round")]
-    internal class FuncRound : IFunction
+    internal class FuncRound : FunctionBase, IFunction
     {
-        public object? Invoke(object[] args)
+        public object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
+            args = base.UnwarpArgs(dataContext, args);
+
             return args;
         }
     }

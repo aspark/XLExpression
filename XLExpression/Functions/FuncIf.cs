@@ -8,10 +8,12 @@ namespace XLExpression.Functions
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "if")]
-    internal class FuncIf: IFunction
+    internal class FuncIf: FunctionBase, IFunction
     {
-        public object? Invoke(object[] args)
+        public object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
+            args = base.UnwarpArgs(dataContext, args);
+
             if (args?.Length == 3)
             {
                 var b = false;
