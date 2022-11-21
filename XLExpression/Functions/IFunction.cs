@@ -47,7 +47,7 @@ namespace XLExpression.Functions
             if (args == null)
                 return new object[0];
 
-            var unWrapped = new object[args.Length];
+            var unWrapped = new object?[args.Length];
 
             for(var i = 0; i < args.Length; i++)
             {
