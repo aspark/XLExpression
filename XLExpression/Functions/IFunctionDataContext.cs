@@ -81,8 +81,8 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].row - range[0].row;//行数
-                    var colCount = range[1].col - range[0].col;//列数
+                    var rowCount = range[1].row - range[0].row + 1;//行数
+                    var colCount = range[1].col - range[0].col + 1;//列数
                     var datas = new object?[rowCount, colCount];
                     for(var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {

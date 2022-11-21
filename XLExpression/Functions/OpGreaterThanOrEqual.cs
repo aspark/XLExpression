@@ -15,7 +15,7 @@ namespace XLExpression.Functions
 
             if (args?.Length == 2)
             {
-                return Convert.ToDecimal(args[0]) >= Convert.ToDecimal(args[1]);
+                return args[0].TryToDecimal() >= args[1].TryToDecimal();
             }
 
             throw new ArgumentException("参数错误");

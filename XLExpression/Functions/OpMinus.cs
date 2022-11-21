@@ -16,11 +16,11 @@ namespace XLExpression.Functions
             if (args.Length == 1)
             {
                 //取负
-                return 0 - Convert.ToDecimal(args[0]);
+                return 0 - args[0].TryToDecimal();
             }
             else if (args.Length == 2)
             {
-                return Convert.ToDecimal(args[0]) - Convert.ToDecimal(args[1]);
+                return args[0].TryToDecimal() - args[1].TryToDecimal();
             }
 
             return null;

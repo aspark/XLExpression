@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace XLExpression.Common
+namespace XLExpression
 {
     internal static class Extensions
     {
@@ -14,6 +14,16 @@ namespace XLExpression.Common
             }
 
             return dic[key];
+        }
+
+        public static decimal TryToDecimal(this object? obj)
+        {
+            if(obj == null) 
+                return 0;
+
+            decimal.TryParse(obj.ToString(), out decimal result);
+
+            return result;
         }
     }
 }

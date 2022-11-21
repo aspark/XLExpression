@@ -30,7 +30,7 @@ namespace XLExpression
         {
             var parameters = new Dictionary<string, ParameterExpression>(StringComparer.InvariantCultureIgnoreCase);
 
-            var result = new ExpressionResult(Build(ConvertToNode(formula), ref parameters)) { Args = parameters.Values.ToArray() };
+            var result = new ExpressionResult(Build(ConvertToNode(formula), ref parameters)) { Parameters = parameters.Values.ToArray() };
 
             return result;
         }

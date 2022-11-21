@@ -19,9 +19,9 @@ namespace XLExpression
         /// <summary>
         /// ordered args
         /// </summary>
-        public string[]? ArgNames => Args?.Select(r => r.Name).ToArray();
+        public string[]? ArgNames => Parameters?.Select(r => r.Name).ToArray();
 
-        internal ParameterExpression[] Args { get; set; }
+        internal ParameterExpression[] Parameters { get; set; }
 
         public bool HasRel { get; internal set; }
 
@@ -34,27 +34,29 @@ namespace XLExpression
         {
             if (Exp.NodeType == ExpressionType.Call)
             {
-                if (Args?.Length > 0)
+                if (Parameters?.Length > 0)
                 {
                     //if (args?.Count != Args.Length || Args.Any(arg => !args.ContainsKey(arg.Name)))
                     //{
                     //    throw new ArgumentException("miss argument");
                     //}
 
-                    var lambda = Expression.Lambda(Exp, Args);
-
-                    return lambda.Compile().DynamicInvoke(Args.Select(arg => {
-                        if(arg.Type == typeof(IFunctionDataContext))
+                    var lambda = Expression.Lambda(Exp, Parameters);
+                    var args = Parameters.Select(arg =>
+                    {
+                        if (arg.Type == typeof(IFunctionDataContext))
                         {
                             return dataContext;
                         }
-                        else if(arg.Type == typeof(FuncRefArg))
+                        else if (arg.Type == typeof(FuncRefArg))
                         {
                             return new FuncRefArg(arg.Name);
                         }
 
                         return (object?)null;
-                    }).ToArray());
+                    }).ToArray();
+
+                    return lambda.Compile().DynamicInvoke(args);
                 }
             }
 

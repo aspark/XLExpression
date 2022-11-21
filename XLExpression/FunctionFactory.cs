@@ -29,11 +29,12 @@ namespace XLExpression
 
         public IFunction? GetOperator(string name)
         {
-            //var func = _container.GetExportedValue<IFunction>(name);
+            var func = _functions.FirstOrDefault(f => f.Metadata.Symbol.Equals(name, StringComparison.InvariantCultureIgnoreCase))?.Value;
 
-            //return func;
+            if (func == null)
+                throw new NotSupportedException("not supported function:" + name);
 
-            return _functions.FirstOrDefault(f => f.Metadata.Symbol.Equals(name, StringComparison.InvariantCultureIgnoreCase))?.Value;
+            return func;
         }
     }
 }
