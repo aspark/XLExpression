@@ -57,7 +57,9 @@ namespace XLExpression.Functions
 
                 if (arg is FuncRefArg refArg)
                 {
-                    unWrapped[i] = dataContext[refArg.Name];
+                    var name = refArg.Name.Replace("$", "");//remove $
+
+                    unWrapped[i] = dataContext[name];
                 }
                 else
                 {

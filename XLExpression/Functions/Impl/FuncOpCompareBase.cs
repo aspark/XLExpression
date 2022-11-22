@@ -28,9 +28,17 @@ namespace XLExpression.Functions.Impl
             if (b == null)
                 return 1;
 
-            if(a is string || b is string)
+            if (a is DateTime || b is DateTime)
             {
-                string.Compare(a.ToString(), b.ToString());
+                var at = a is DateTime ? (DateTime)a : DateTime.Parse(a.ToString());
+                var bt = b is DateTime ? (DateTime)b : DateTime.Parse(b.ToString());
+
+                return DateTime.Compare(at, bt);
+            }
+
+            if (a is string || b is string)
+            {
+                return string.Compare(a.ToString(), b.ToString());
             }
 
             return decimal.Compare(a.TryToDecimal(), b.TryToDecimal());

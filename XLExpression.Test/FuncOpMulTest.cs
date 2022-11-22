@@ -6,7 +6,7 @@ namespace XLExpression.Test
     public class FuncOpMulTest
     {
         [Fact]
-        public void AddTest1()
+        public void Test1()
         {
             var exp = ExpressionBuilder.Instance.Build("1*2");
 
@@ -19,7 +19,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void AddTest2()
+        public void Test2()
         {
             var exp = ExpressionBuilder.Instance.Build("2*3*4");
 
@@ -32,7 +32,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void AddTest3()
+        public void Test3()
         {
             var exp = ExpressionBuilder.Instance.Build("2*F2");
 
@@ -45,7 +45,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void AddTest4()
+        public void Test4()
         {
             var exp = ExpressionBuilder.Instance.Build("A1*F2");
 

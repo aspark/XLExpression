@@ -16,7 +16,7 @@ namespace XLExpression
             return dic[key];
         }
 
-        public static int? TryToInt(this object? obj)
+        public static int TryToInt(this object? obj)
         {
             if (obj == null)
                 return 0;

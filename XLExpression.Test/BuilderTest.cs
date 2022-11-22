@@ -29,13 +29,28 @@ namespace XLExpression.Test
             (node as FunctionNode).Arguments[0].Type.ShouldBe(NodeType.Function);
         }
 
-        //[Fact]
-        //public void CompliTest()
-        //{
-        //    var exp = ExpressionBuilder.Instance.Build("ROUND(AI2*(1+CT2)*(12+AL2)+CN2+IF(J2<=DATE($U$5-2,12,31),(CD2+CE2)*(1+CU2)^2+CF2+CG2,IF(CJ2>0,CJ2+AI2*(1+CT2)*(12+AL2)/(1-AN2)*AN2,IF(OR(AN2=0,AN2=0.0714),AI2*(1+CT2)*(CS2-(12+AL2)),AI2*(1+CT2)*(12+AL2)/(1-AN2)*AN2))),-1)");
-        //    var result = exp.Invoke(new { });
+        [Fact]
+        public void ComplexFormulaTest()
+        {
+            var exp = ExpressionBuilder.Instance.Build("ROUND(2*(1+B1)*(1+C1)+D1+IF(E1<=DATE($M$1-1,6,30),(F1+G1)*(1+H1)^2+I1+J1,IF(K1>0,K1+1*(1+B1)*(5+C1)/(1-N1)*N1,IF(OR(N1=0,N1=0.5),1*(1+B1)*(L1-(5+C1)),1*(1+B1)*(5+C1)/(1-N1)*N1))),-1)");
+            var result = exp.Invoke(new {
+                A1 = 0,
+                B1 = 1,
+                C1 = 2,
+                D1 = 3,
+                E1 = "2022-12-20",
+                F1 = 5,
+                G1 = 6,
+                H1 = 7,
+                I1 = 8,
+                J1 = 9,
+                K1 = 10,
+                L1 = 11,
+                M1 = 2022,
+                N1 = 12,
+            });
 
-        //    result.ShouldNotBeNull();
-        //}
+            result.ShouldBe(10);
+        }
     }
 }

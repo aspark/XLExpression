@@ -6,7 +6,7 @@ namespace XLExpression.Test
     public class FuncOpDivTest
     {
         [Fact]
-        public void DivTest1()
+        public void Test1()
         {
             var exp = ExpressionBuilder.Instance.Build("1/2");
 
@@ -19,7 +19,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void DivTest2()
+        public void Test2()
         {
             var exp = ExpressionBuilder.Instance.Build("1/2/4");
 
@@ -32,7 +32,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void DivTest3()
+        public void Test3()
         {
             var exp = ExpressionBuilder.Instance.Build("1/F2");
 
@@ -45,7 +45,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void DivTest4()
+        public void Test4()
         {
             var exp = ExpressionBuilder.Instance.Build("A1/F2");
 

@@ -53,11 +53,15 @@ namespace XLExpression.Test
             exp.Exp.ShouldNotBeNull();
 
             var result = exp.Invoke(new { A1 = 3, B2 = 3 });
-
             result.ShouldBe(false);
 
             result = exp.Invoke(new { A1 = 3, B2 = 1 });
+            result.ShouldBe(true);
 
+            result = exp.Invoke(new { A1 = new DateTime(2022, 11, 21), B2 = "2022-11-22" });
+            result.ShouldBe(false);
+
+            result = exp.Invoke(new { A1 = new DateTime(2022, 11, 21), B2 = "2022-11-20" });
             result.ShouldBe(true);
         }
 

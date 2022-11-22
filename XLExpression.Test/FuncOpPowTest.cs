@@ -3,59 +3,61 @@ using XLParser;
 
 namespace XLExpression.Test
 {
-    public class FuncOpAddTest
+    public class FuncOpPowTest
     {
-        //ADD
         [Fact]
         public void Test1()
         {
-            var exp = ExpressionBuilder.Instance.Build("1+2");
+            var exp = ExpressionBuilder.Instance.Build("2^3");
 
             exp.ShouldNotBeNull();
             exp.Exp.ShouldNotBeNull();
 
             var result = exp.Invoke();
-
-            result.ShouldBe(3);
+            result.ShouldBe(8);
         }
 
         [Fact]
         public void Test2()
         {
-            var exp = ExpressionBuilder.Instance.Build("1+2+3");
+            var exp = ExpressionBuilder.Instance.Build("2^2^2");
 
             exp.ShouldNotBeNull();
             exp.Exp.ShouldNotBeNull();
 
             var result = exp.Invoke();
+            result.ShouldBe(16);
 
-            result.ShouldBe(6);
+            exp = ExpressionBuilder.Instance.Build("(2^2+1)^2");
+
+            result = exp.Invoke();
+            result.ShouldBe(25);
         }
 
         [Fact]
         public void Test3()
         {
-            var exp = ExpressionBuilder.Instance.Build("1+F2");
+            var exp = ExpressionBuilder.Instance.Build("2^F2");
 
             exp.ShouldNotBeNull();
             exp.Exp.ShouldNotBeNull();
 
-            var result = exp.Invoke(new { F2 = "abc" });
+            var result = exp.Invoke(new { F2 = 4 });
 
-            result.ShouldBe("1abc");
+            result.ShouldBe(16);
         }
 
         [Fact]
         public void Test4()
         {
-            var exp = ExpressionBuilder.Instance.Build("A1+F2");
+            var exp = ExpressionBuilder.Instance.Build("A1^F2");
 
             exp.ShouldNotBeNull();
             exp.Exp.ShouldNotBeNull();
 
-            var result = exp.Invoke(new { A1 = "ABC", F2 = "abc" });
+            var result = exp.Invoke(new { A1 = 3, F2 = 4 });
 
-            result.ShouldBe("ABCabc");
+            result.ShouldBe(81);
         }
 
     }
