@@ -129,12 +129,19 @@ namespace XLExpression
             }
             else if (xlNode.Token != null)
             {
-                if(xlNode.Term.Name.Equals("CellToken", StringComparison.InvariantCultureIgnoreCase))
+                var termName = xlNode.Term.Name;
+
+                if(termName.Equals("CellToken", StringComparison.InvariantCultureIgnoreCase))
                 {
                     //参数
                     return new RefNode() { Name = xlNode.Token.Text };
                 }
-                
+                else if(termName.Equals("BoolToken", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    bool.TryParse(xlNode.Token.ValueString, out bool b);
+                    return new ConstNode() { Value = b };
+                }
+
                 return new ConstNode() { Value = xlNode.Token.Value };
             }
 

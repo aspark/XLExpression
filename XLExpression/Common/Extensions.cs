@@ -16,6 +16,34 @@ namespace XLExpression
             return dic[key];
         }
 
+        public static int? TryToInt(this object? obj)
+        {
+            if (obj == null)
+                return 0;
+
+            if (obj.GetType() == typeof(int))
+                return (int)obj;
+
+            if (int.TryParse(obj.ToString(), out int result))
+                return result;
+
+            return 0;
+        }
+
+        public static int? TryToNullableInt(this object? obj)
+        {
+            if (obj == null)
+                return null;
+
+            if (obj.GetType() == typeof(int))
+                return (int)obj;
+
+            if (int.TryParse(obj.ToString(), out int result))
+                return result;
+
+            return null;
+        }
+
         public static decimal TryToDecimal(this object? obj)
         {
             if (obj == null)

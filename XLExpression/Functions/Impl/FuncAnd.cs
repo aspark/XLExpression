@@ -7,8 +7,8 @@ using System.Text;
 namespace XLExpression.Functions.Impl
 {
     [Export(typeof(IFunction))]
-    [ExportMetadata("Symbol", "or")]
-    internal class FuncOr : FunctionBase, IFunction
+    [ExportMetadata("Symbol", "and")]
+    internal class FuncAnd : FunctionBase, IFunction
     {
         public override object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
@@ -18,11 +18,11 @@ namespace XLExpression.Functions.Impl
             {
                 foreach (var arg in args)
                 {
-                    if (bool.Equals(arg, true) || arg.TryToInt() != 0)
-                        return true;
+                    if (bool.Equals(arg, false) || arg.TryToNullableInt() == 0)
+                        return false;
                 }
 
-                return false;
+                return true;
             }
 
             throw new ArgumentException("参数错误");
