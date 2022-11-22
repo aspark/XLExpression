@@ -1,12 +1,12 @@
 ﻿# XLExpression
 
-parse excel formula to C# expression/lambda  
-将 Excel 中的公式转为 C#的表达式树，然后使用 lamba 执行
+parse excel formula to C# expression, and compile to executable lambda 
+将 Excel 中的公式转为 C#的表达式树，然后使用 lambda 执行
 
 # Usage
 
 ```C#
-ExpressionBuilder.Instance.ConvertToNode("IF(F2>G2,1,0)");
+ExpressionBuilder.Instance.Build("IF(F2>G2,1,0)");
 var result = exp.Invoke(new { F2 = 1, G2 = 0 });
 ```
 
@@ -14,11 +14,11 @@ var result = exp.Invoke(new { F2 = 1, G2 = 0 });
 
 formula implments at `XLExpression/Functions/Impl/...`
 
-# Supported
+# Supported function
 
 has implemented:
-| formula/function/symbols | Remark |
-|--|---|
+| function/symbols | Remark |
+| --- | --- |
 | + | add/concat string |
 | - | minus |
 | \* | multiply |
