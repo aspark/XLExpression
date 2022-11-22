@@ -6,7 +6,7 @@ parse excel formula to C# expression, and compile to executable lambda
 # Usage
 
 ```C#
-ExpressionBuilder.Instance.Build("IF(F2>G2,1,0)");
+var exp = ExpressionBuilder.Instance.Build("IF(F2>G2,1,0)");
 var result = exp.Invoke(new { F2 = 1, G2 = 0 });
 ```
 
