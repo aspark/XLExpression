@@ -14,7 +14,7 @@ namespace XLExpression.Functions.Impl
                 return Compare(args[0], args[1]);
             }
 
-            throw new ArgumentException("参数错误:Compare");
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
 
         public int? Compare(object a, object b)

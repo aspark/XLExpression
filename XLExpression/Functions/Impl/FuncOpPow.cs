@@ -18,7 +18,7 @@ namespace XLExpression.Functions.Impl
                 return Math.Pow(args[0].TryToDouble(), args[1].TryToDouble());
             }
 
-            throw new ArgumentException("参数错误:" + nameof(FuncOpMul));
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }

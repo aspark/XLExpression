@@ -22,7 +22,7 @@ namespace XLExpression.Functions.Impl
                 return Math.Round(args[0].TryToDouble() * factor, MidpointRounding.AwayFromZero) / factor;
             }
 
-            throw new ArgumentException("参数错误:" + nameof(FuncRound));
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }

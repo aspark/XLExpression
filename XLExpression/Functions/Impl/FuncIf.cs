@@ -33,7 +33,7 @@ namespace XLExpression.Functions.Impl
                 return b ? args[1] : args[2];
             }
 
-            throw new ArgumentException("参数错误");
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace XLExpression.Functions.Impl
                 return new DateTime(args[0].TryToInt(), args[1].TryToInt(), args[2].TryToInt());
             }
 
-            throw new ArgumentException("参数错误:" + nameof(FuncRound));
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }

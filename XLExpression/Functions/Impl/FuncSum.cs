@@ -38,7 +38,7 @@ namespace XLExpression.Functions.Impl
                 return sum;
             }
 
-            throw new ArgumentException("参数错误");
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }

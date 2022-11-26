@@ -18,7 +18,7 @@ namespace XLExpression.Functions.Impl
                 return args[0].TryToDecimal() * args[1].TryToDecimal();
             }
 
-            throw new ArgumentException("参数错误:" + nameof(FuncOpMul));
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }

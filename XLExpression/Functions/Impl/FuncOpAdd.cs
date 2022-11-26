@@ -28,7 +28,7 @@ namespace XLExpression.Functions.Impl
                 return Convert.ToDecimal(args[0]) + Convert.ToDecimal(args[1]);
             }
 
-            throw new ArgumentException("参数错误");
+            throw new ArgumentException("参数错误:" + this.GetType().Name);
         }
     }
 }
