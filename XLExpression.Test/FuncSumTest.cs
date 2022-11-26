@@ -5,9 +5,8 @@ namespace XLExpression.Test
 {
     public class FuncSumTest
     {
-        //SUM
         [Fact]
-        public void SumTest1()
+        public void Test1()
         {
             var exp = ExpressionBuilder.Instance.Build("SUM(F2:H2)");
 
@@ -20,7 +19,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void SumTest2()
+        public void Test2()
         {
             var exp = ExpressionBuilder.Instance.Build("SUM(F2:H3)");
 
@@ -33,7 +32,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void SumTest3()
+        public void Test3()
         {
             var exp = ExpressionBuilder.Instance.Build("SUM(F2:H2, F3:H3)");
 

@@ -9,7 +9,7 @@ namespace XLExpression.Functions.Impl
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", ":")]
-    internal class FuncRange : FunctionBase, IFunction
+    internal class FuncOpRange : FunctionBase, IFunction
     {
         public override object? Invoke(IFunctionDataContext dataContext, object[] args)
         {

@@ -18,7 +18,7 @@ namespace XLExpression.Functions.Impl
             {
                 foreach (var arg in args)
                 {
-                    if (bool.Equals(arg, false) || arg.TryToNullableInt() == 0)
+                    if (arg.TryToBool() == false)
                         return false;
                 }
 

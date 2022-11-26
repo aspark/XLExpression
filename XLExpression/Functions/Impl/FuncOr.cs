@@ -18,7 +18,7 @@ namespace XLExpression.Functions.Impl
             {
                 foreach (var arg in args)
                 {
-                    if (bool.Equals(arg, true) || arg.TryToInt() != 0)
+                    if (arg.TryToBool())
                         return true;
                 }
 
