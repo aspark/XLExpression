@@ -14,11 +14,24 @@ namespace XLExpression.Test
             exp.Exp.ShouldNotBeNull();
 
             var result = exp.Invoke(new { 
-                F2 = 12, G2 = 2, H2 = 3, 
+                F2 = 121, G2 = 2, H2 = 3, 
                 F3 = 21, G3 = 12, H3 = 23 
             });
+            result.ShouldBe(2);
 
+            exp = ExpressionBuilder.Instance.Build("VLOOKUP(\"21\", F2:H3, 2, 0)");
+            result = exp.Invoke(new { 
+                F2 = 121, G2 = 2, H2 = 3, 
+                F3 = 21, G3 = 12, H3 = 23 
+            });
             result.ShouldBe(12);
+
+            exp = ExpressionBuilder.Instance.Build("VLOOKUP(\"21\", F2:H3, 2, 1)");
+            result = exp.Invoke(new { 
+                F2 = 121, G2 = 2, H2 = 3, 
+                F3 = 21, G3 = 12, H3 = 23 
+            });
+            result.ShouldBe(2);
         }
 
         [Fact]
@@ -60,7 +73,27 @@ namespace XLExpression.Test
             {
                 A1 = 21,
                 I1 = 1,
+                J1 = 1,
+                F2 = 121, G2 = 2, H2 = 3, 
+                F3 = 21, G3 = 12, H3 = 23 
+            });
+            result.ShouldBe(121);
+
+            result = exp.Invoke(new
+            {
+                A1 = 21,
+                I1 = 1,
                 J1 = false,
+                F2 = 121, G2 = 2, H2 = 3, 
+                F3 = 21, G3 = 12, H3 = 23 
+            });
+            result.ShouldBe(21);
+
+            result = exp.Invoke(new
+            {
+                A1 = 21,
+                I1 = 1,
+                J1 = 0,
                 F2 = 121, G2 = 2, H2 = 3, 
                 F3 = 21, G3 = 12, H3 = 23 
             });
