@@ -25,6 +25,7 @@ has implemented:
 | / | divide |
 | ^ | pow |
 | = | equal |
+| <> | not equal |
 | > | greater than |
 | >= | greater than or equal |
 | < | less than |
