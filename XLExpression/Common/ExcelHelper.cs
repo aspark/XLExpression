@@ -43,9 +43,9 @@ namespace XLExpression.Common
         /// <param name="col"></param>
         /// <param name="row"></param>
         /// <returns></returns>
-        public string ConvertIndexToName(int col, int row)
+        public static string ConvertIndexToName(int col, int row)
         {
-            return ConvertIndexToName(col) + row;
+            return ConvertIndexToName(col) + (row + 1);
         }
 
         /// <summary>
@@ -53,13 +53,17 @@ namespace XLExpression.Common
         /// </summary>
         /// <param name="col"></param>
         /// <returns></returns>
-        public string ConvertIndexToName(int col)
+        public static string ConvertIndexToName(int col)
         {
             var colName = "";
             var quotient = col;
-            while ((quotient = Math.DivRem(quotient, colNames.Count, out int rem)) > 0)
+            for (int i = 0; i < 1000; i++)
             {
-                colName = colNames[rem] + colName;
+                quotient = Math.DivRem(quotient, colNames.Count, out int rem);
+                colName = colNames[i > 0 ? rem - 1 : rem] + colName;//进位后的余下的1，对应0
+
+                if (quotient <= 0)
+                    break;
             }
 
             return colName;

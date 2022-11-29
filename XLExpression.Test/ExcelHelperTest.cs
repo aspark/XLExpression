@@ -52,6 +52,25 @@ namespace XLExpression.Test
             pos = ExcelHelper.ConvertNameToPosition("ABC25");
             pos.col.ShouldBe(730);
             pos.row.ShouldBe(24);
+
+            var name = ExcelHelper.ConvertIndexToName(0);
+            name.ShouldBe("A");
+
+            name = ExcelHelper.ConvertIndexToName(25);
+            name.ShouldBe("Z");
+
+            name = ExcelHelper.ConvertIndexToName(26);
+            name.ShouldBe("AA");
+
+            name = ExcelHelper.ConvertIndexToName(0, 0);
+            name.ShouldBe("A1");
+
+            name = ExcelHelper.ConvertIndexToName(4, 1);
+            name.ShouldBe("E2");
+
+            name = ExcelHelper.ConvertIndexToName(730, 24);
+            name.ShouldBe("ABC25");
+
         }
 
     }
