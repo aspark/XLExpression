@@ -13,25 +13,32 @@ namespace XLExpression.Common
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static (int col, int row) ConvertNameToPosition(string name)
+        public static (int? col, int? row) ConvertNameToPosition(string name)
         {
             //var chars = new char[]
-            var m = Regex.Match(name, @"(?<col>[A-Z]+)(?<row>[0-9]*)");
-            var col = 0;
-            var row = 0;
+            var m = Regex.Match(name, @"(?<col>[A-Z]*)(?<row>[0-9]*)");
+            int? col = null;
+            int? row = null;
             if (m.Success)
             {
                 var colName = m.Groups["col"].Value;
-                for (int i = 0; i < colName.Length; i++)
+                if (!string.IsNullOrWhiteSpace(colName))
                 {
-                    col += ((int)Math.Pow(colNames.Count, colName.Length - 1 - i) * (colNames.IndexOf(colName[i]) + 1));
+                    for (int i = 0; i < colName.Length; i++)
+                    {
+                        col = (col ?? 0) + ((int)Math.Pow(colNames.Count, colName.Length - 1 - i) * (colNames.IndexOf(colName[i]) + 1));
+                    }
+
+                    if (col > 0)
+                        col -= 1;
                 }
 
-                if (col > 0)
-                    col -= 1;
-
-                if (int.TryParse(m.Groups["row"].Value, out row))
-                    row -= 1;
+                var rowName = m.Groups["row"].Value;
+                if (!string.IsNullOrWhiteSpace(rowName))
+                {
+                    if (int.TryParse(rowName, out int r))
+                        row = r - 1;
+                }
             }
 
             return (col, row);

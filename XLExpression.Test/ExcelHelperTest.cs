@@ -17,6 +17,14 @@ namespace XLExpression.Test
             pos.col.ShouldBe(5);
             pos.row.ShouldBe(1);
 
+            pos = ExcelHelper.ConvertNameToPosition("F");
+            pos.col.ShouldBe(5);
+            pos.row.ShouldBe(null);
+
+            pos = ExcelHelper.ConvertNameToPosition("2");
+            pos.col.ShouldBe(null);
+            pos.row.ShouldBe(1);
+
             pos = ExcelHelper.ConvertNameToPosition("Z2");
             pos.col.ShouldBe(25);
             pos.row.ShouldBe(1);

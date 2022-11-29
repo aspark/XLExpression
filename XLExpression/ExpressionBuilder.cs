@@ -131,7 +131,9 @@ namespace XLExpression
             {
                 var termName = xlNode.Term.Name;
 
-                if(termName.Equals("CellToken", StringComparison.InvariantCultureIgnoreCase))
+                if(termName.Equals("CellToken", StringComparison.InvariantCultureIgnoreCase)
+                    || termName.Equals("VRangeToken", StringComparison.InvariantCultureIgnoreCase)
+                    || termName.Equals("HRangeToken", StringComparison.InvariantCultureIgnoreCase))
                 {
                     //参数
                     return new RefNode() { Name = xlNode.Token.Text };

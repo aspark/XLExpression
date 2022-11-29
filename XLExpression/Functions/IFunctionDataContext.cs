@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -52,6 +53,10 @@ namespace XLExpression.Functions
             }
         }
 
+        public int RowCount => _rows.Any() ? _rows.Max(m => m.Key) + 1 : 0;
+
+        public int ColCount => _rows.Max(m => m.Value.ColCount);
+
         public FunctionDataRow this[int row]
         {
             get
@@ -86,15 +91,17 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].row - range[0].row + 1;//行数
-                    var colCount = range[1].col - range[0].col + 1;//列数
+                    var rowCount = range[1].row.HasValue && range[0].row.HasValue ? range[1].row.Value - range[0].row.Value + 1 : RowCount;//行数
+                    var colCount = range[1].col.HasValue && range[0].col.HasValue ? range[1].col.Value - range[0].col.Value + 1 : ColCount;//列数
                     var datas = new object?[rowCount, colCount];
-                    for(var rowIndex = 0; rowIndex < rowCount; rowIndex++)
+                    var rowTotalCount = datas.GetLength(0);
+                    var colTotalCount = datas.GetLength(1);
+                    for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        var row = this[range[0].row + rowIndex];
+                        var row = this[(range[0].row ?? 0) + rowIndex];
                         for (var colIndex = 0; colIndex < colCount; colIndex++)
                         {
-                            datas[rowIndex, colIndex] = row?[range[0].col + colIndex];
+                            datas[rowIndex, colIndex] = row?[(range[0].col ?? 0) + colIndex];
                         }
                     }
 
@@ -103,8 +110,36 @@ namespace XLExpression.Functions
                 else
                 {
                     var index = ExcelHelper.ConvertNameToPosition(name);
+                    if(index.row.HasValue && index.col.HasValue)
+                    {
+                        return this[index.row.Value, index.col.Value];
+                    }
+                    else if (index.row.HasValue)
+                    {
+                        var row = this[index.row.Value];
 
-                    return this[index.row, index.col];
+                        var allData = row.AllData;
+
+                        var rowData = new object?[0, allData.Length];
+
+                        for(var i = 0; i < allData.Length; i++)
+                        {
+                            rowData[0, i] = allData[i];
+                        }
+
+                        return rowData;
+                        
+                    }
+                    else if (index.col.HasValue)
+                    {
+                        var colData = new object?[RowCount, 1];
+                        for (var rowIndex = 0; rowIndex < colData.GetLength(0); rowIndex++)
+                        {
+                            colData[rowIndex, 0] = this[rowIndex]?[index.col.Value];
+                        }
+                    }
+
+                    return null;
                 }
             }
             set
@@ -112,22 +147,39 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].row - range[0].row;//行数
-                    var colCount = range[1].col - range[0].col;//列数
+                    var rowCount = range[1].row.HasValue && range[0].row.HasValue ? range[1].row - range[0].row + 1 : this.RowCount;//行数
+                    var colCount = range[1].col.HasValue && range[0].col.HasValue ? range[1].col - range[0].col + 1 : this.ColCount;//列数
                     for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        var row = this[range[0].row + rowIndex];
+                        var row = this[(range[0].row??0) + rowIndex];
                         for (var colIndex = 0; colIndex < colCount; colIndex++)
                         {
-                            row[range[0].col + colIndex] = value;
+                            row[(range[0].col ?? 0) + colIndex] = value;
                         }
                     }
                 }
                 else
                 {
                     var index = ExcelHelper.ConvertNameToPosition(name);
-
-                    this[index.row, index.col] = value;
+                    if(index.row.HasValue && index.col.HasValue)
+                    {
+                        this[index.row.Value, index.col.Value] = value;
+                    }
+                    else if (index.row.HasValue)
+                    {
+                        var row = this[index.row.Value];
+                        for (var colIndex = 0; colIndex < ColCount; colIndex++)
+                        {
+                            row[colIndex] = value;
+                        }
+                    }
+                    else if (index.col.HasValue)
+                    {
+                        for (var rowIndex = 0; rowIndex < RowCount; rowIndex++)
+                        {
+                            this[rowIndex][index.col.Value] = value;
+                        }
+                    }
                 }
             }
         }
@@ -152,16 +204,50 @@ namespace XLExpression.Functions
 
         private ConcurrentDictionary<int, object?> _data = new ConcurrentDictionary<int, object?>();
 
-        public bool Add(string header, object data)
-        {
-            var index = ExcelHelper.ConvertNameToPosition(header);
-            return _data.TryAdd(index.col, data);
-        }
+        public int ColCount { get => _data.Any() ? _data.Max(k => k.Key) + 1 : 0 ; }
 
-        public bool Remove(string header)
+        //public bool Add(string header, object data)
+        //{
+        //    var index = ExcelHelper.ConvertNameToPosition(header);
+        //    if(index.col.HasValue)
+        //        return _data.TryAdd(index.col.Value, data);
+
+        //    for (var i = 0; i < this.ColCount; i++){
+        //        _data.TryAdd(i, data);
+        //    }
+
+        //    return true;
+        //}
+
+        //public bool Remove(string header)
+        //{
+        //    var index = ExcelHelper.ConvertNameToPosition(header);
+
+        //    if(index.col.HasValue)
+        //        return _data.TryRemove(index.col.Value, out _);
+
+        //    _data.Clear();
+
+        //    return true;
+        //}
+
+        //public object[] ToArray()
+        //{
+        //    return 
+        //}
+
+        public object?[] AllData
         {
-            var index = ExcelHelper.ConvertNameToPosition(header);
-            return _data.TryRemove(index.col, out _);
+            get
+            {
+                var rowData = new object?[this.ColCount];
+                for (var colIndex = 0; colIndex < rowData.Length; colIndex++)
+                {
+                    rowData[colIndex] = this[colIndex];
+                }
+
+                return rowData;
+            }
         }
 
         public object? this[string name]
@@ -170,13 +256,16 @@ namespace XLExpression.Functions
             {
                 var index = ExcelHelper.ConvertNameToPosition(name);
 
-                return this[index.col];
+                if(index.col.HasValue)
+                    return this[index.col.Value];
+
+                return AllData;
             }
             set
             {
                 var index = ExcelHelper.ConvertNameToPosition(name);
-
-                this[index.col] = value;
+                
+                this[index.col.Value] = value;
             }
         }
 
@@ -191,7 +280,7 @@ namespace XLExpression.Functions
             }
             set
             {
-                _data.GetOrAdd(index, (i) => value);
+                _data.AddOrUpdate(index, (i) => value, (i, o) => value);
             }
         }
     }
