@@ -17,25 +17,25 @@ formula implments at `XLExpression/Functions/Impl/...`
 # Supported function
 
 has implemented:
-|function/symbols|Remark|
-|---|---|
-| + | add/concat string |
-| - | minus |
-| \* | multiply |
-| / | divide |
-| ^ | pow |
-| = | equal |
-| <> | not equal |
-| > | greater than |
-| >= | greater than or equal |
-| < | less than |
-| <= | less than or equal |
-| If | |
-| And | |
-| Or | |
-| Round | |
-| Date | |
-| Sum | SUM(A1:A9), SUM(A1:D4), SUM(A1:A9, A1:D4)|
-| VLookup | |
-| Left | |
-| Right | |
+
+| function/symbols | Remark                                    |
+| ---------------- | ----------------------------------------- |
+| +                | add/concat string                         |
+| -                | minus                                     |
+| /                | divide                                    |
+| ^                | pow                                       |
+| =                | equal                                     |
+| <>               | not equal                                 |
+| >                | greater than                              |
+| >=               | greater than or equal                     |
+| <                | less than                                 |
+| <=               | less than or equal                        |
+| If               |                                           |
+| And              |                                           |
+| Or               |                                           |
+| Round            |                                           |
+| Date             |                                           |
+| Sum              | SUM(A1:A9), SUM(A1:D4), SUM(A1:A9, A1:D4) |
+| VLookup          |                                           |
+| Left             |                                           |
+| Right            |                                           |
