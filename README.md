@@ -1,6 +1,6 @@
 ﻿# XLExpression
 
-parse excel formula to C# expression, and compile to executable lambda 
+parse excel formula to C# expression, and compile to executable lambda
 将 Excel 中的公式转为 C#的表达式树，然后使用 lambda 执行
 
 # Usage
@@ -17,8 +17,8 @@ formula implments at `XLExpression/Functions/Impl/...`
 # Supported function
 
 has implemented:
-| function/symbols | Remark |
-| --- | --- |
+|function/symbols|Remark|
+|---|---|
 | + | add/concat string |
 | - | minus |
 | \* | multiply |
