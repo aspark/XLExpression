@@ -22,6 +22,7 @@ has implemented:
 | ---------------- | ----------------------------------------- |
 | +                | add/concat string                         |
 | -                | minus                                     |
+| \*               | minus                                     |
 | /                | divide                                    |
 | ^                | pow                                       |
 | =                | equal                                     |
