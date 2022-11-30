@@ -13,7 +13,7 @@ namespace XLExpression.Common
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static (int? col, int? row) ConvertNameToPosition(string name)
+        public static (int? col, int? row) ConvertNameToPosition(string name)//todo: 将返回类型改为struct
         {
             //var chars = new char[]
             var m = Regex.Match(name, @"(?<col>[A-Z]*)(?<row>[0-9]*)");
