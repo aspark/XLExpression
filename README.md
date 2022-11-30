@@ -3,6 +3,10 @@
 parse excel formula to C# expression, and compile to executable lambda
 将 Excel 中的公式转为 C#的表达式树，然后使用 lambda 执行
 
+# Install
+
+download release or see https://www.nuget.org/packages/XLExpression
+
 # Usage
 
 ```C#
@@ -40,3 +44,4 @@ has implemented:
 | VLookup          |                                           |
 | Left             |                                           |
 | Right            |                                           |
+| Find             |                                           |
