@@ -65,6 +65,11 @@ namespace XLExpression
             return true;
         }
 
+        public static bool IsNumber(this object? obj)
+        {
+            return double.TryParse(obj?.ToString() ?? "", out _);
+        }
+
         public static int TryToInt(this object? obj, bool isAllowNaN = true)
         {
             if (obj == null)
