@@ -16,7 +16,7 @@ namespace XLExpression.Common
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ExcelCellPostion ConvertNameToPosition(string name)//todo: 将返回类型改为struct
+        public static ExcelCellPostion ConvertNameToPosition(string name)
         {
             //var chars = new char[]
             var m = _regCellA1Name.Match(name);
