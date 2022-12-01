@@ -91,17 +91,17 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].row.HasValue && range[0].row.HasValue ? range[1].row.Value - range[0].row.Value + 1 : RowCount;//行数
-                    var colCount = range[1].col.HasValue && range[0].col.HasValue ? range[1].col.Value - range[0].col.Value + 1 : ColCount;//列数
+                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row.Value - range[0].Row.Value + 1 : RowCount;//行数
+                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col.Value - range[0].Col.Value + 1 : ColCount;//列数
                     var datas = new object?[rowCount, colCount];
                     var rowTotalCount = datas.GetLength(0);
                     var colTotalCount = datas.GetLength(1);
                     for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        var row = this[(range[0].row ?? 0) + rowIndex];
+                        var row = this[(range[0].Row ?? 0) + rowIndex];
                         for (var colIndex = 0; colIndex < colCount; colIndex++)
                         {
-                            datas[rowIndex, colIndex] = row?[(range[0].col ?? 0) + colIndex];
+                            datas[rowIndex, colIndex] = row?[(range[0].Col ?? 0) + colIndex];
                         }
                     }
 
@@ -110,13 +110,13 @@ namespace XLExpression.Functions
                 else
                 {
                     var index = ExcelHelper.ConvertNameToPosition(name);
-                    if(index.row.HasValue && index.col.HasValue)
+                    if(index.Row.HasValue && index.Col.HasValue)
                     {
-                        return this[index.row.Value, index.col.Value];
+                        return this[index.Row.Value, index.Col.Value];
                     }
-                    else if (index.row.HasValue)
+                    else if (index.Row.HasValue)
                     {
-                        var row = this[index.row.Value];
+                        var row = this[index.Row.Value];
 
                         var allData = row.AllData;
 
@@ -130,12 +130,12 @@ namespace XLExpression.Functions
                         return rowData;
                         
                     }
-                    else if (index.col.HasValue)
+                    else if (index.Col.HasValue)
                     {
                         var colData = new object?[RowCount, 1];
                         for (var rowIndex = 0; rowIndex < colData.GetLength(0); rowIndex++)
                         {
-                            colData[rowIndex, 0] = this[rowIndex]?[index.col.Value];
+                            colData[rowIndex, 0] = this[rowIndex]?[index.Col.Value];
                         }
                     }
 
@@ -147,37 +147,37 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].row.HasValue && range[0].row.HasValue ? range[1].row - range[0].row + 1 : this.RowCount;//行数
-                    var colCount = range[1].col.HasValue && range[0].col.HasValue ? range[1].col - range[0].col + 1 : this.ColCount;//列数
+                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row - range[0].Row + 1 : this.RowCount;//行数
+                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col - range[0].Col + 1 : this.ColCount;//列数
                     for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        var row = this[(range[0].row??0) + rowIndex];
+                        var row = this[(range[0].Row??0) + rowIndex];
                         for (var colIndex = 0; colIndex < colCount; colIndex++)
                         {
-                            row[(range[0].col ?? 0) + colIndex] = value;
+                            row[(range[0].Col ?? 0) + colIndex] = value;
                         }
                     }
                 }
                 else
                 {
                     var index = ExcelHelper.ConvertNameToPosition(name);
-                    if(index.row.HasValue && index.col.HasValue)
+                    if(index.Row.HasValue && index.Col.HasValue)
                     {
-                        this[index.row.Value, index.col.Value] = value;
+                        this[index.Row.Value, index.Col.Value] = value;
                     }
-                    else if (index.row.HasValue)
+                    else if (index.Row.HasValue)
                     {
-                        var row = this[index.row.Value];
+                        var row = this[index.Row.Value];
                         for (var colIndex = 0; colIndex < ColCount; colIndex++)
                         {
                             row[colIndex] = value;
                         }
                     }
-                    else if (index.col.HasValue)
+                    else if (index.Col.HasValue)
                     {
                         for (var rowIndex = 0; rowIndex < RowCount; rowIndex++)
                         {
-                            this[rowIndex][index.col.Value] = value;
+                            this[rowIndex][index.Col.Value] = value;
                         }
                     }
                 }
@@ -209,8 +209,8 @@ namespace XLExpression.Functions
         //public bool Add(string header, object data)
         //{
         //    var index = ExcelHelper.ConvertNameToPosition(header);
-        //    if(index.col.HasValue)
-        //        return _data.TryAdd(index.col.Value, data);
+        //    if(index.Col.HasValue)
+        //        return _data.TryAdd(index.Col.Value, data);
 
         //    for (var i = 0; i < this.ColCount; i++){
         //        _data.TryAdd(i, data);
@@ -223,8 +223,8 @@ namespace XLExpression.Functions
         //{
         //    var index = ExcelHelper.ConvertNameToPosition(header);
 
-        //    if(index.col.HasValue)
-        //        return _data.TryRemove(index.col.Value, out _);
+        //    if(index.Col.HasValue)
+        //        return _data.TryRemove(index.Col.Value, out _);
 
         //    _data.Clear();
 
@@ -256,8 +256,8 @@ namespace XLExpression.Functions
             {
                 var index = ExcelHelper.ConvertNameToPosition(name);
 
-                if(index.col.HasValue)
-                    return this[index.col.Value];
+                if(index.Col.HasValue)
+                    return this[index.Col.Value];
 
                 return AllData;
             }
@@ -265,7 +265,7 @@ namespace XLExpression.Functions
             {
                 var index = ExcelHelper.ConvertNameToPosition(name);
                 
-                this[index.col.Value] = value;
+                this[index.Col.Value] = value;
             }
         }
 
