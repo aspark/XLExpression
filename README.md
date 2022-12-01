@@ -45,3 +45,6 @@ has implemented:
 | Left             |                                           |
 | Right            |                                           |
 | Find             |                                           |
+| Percentile       |                                           |
+| Percentile.Inc   |                                           |
+| Percentile.Exc   |                                           |

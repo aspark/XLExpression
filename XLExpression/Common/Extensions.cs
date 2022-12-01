@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
 
@@ -58,22 +59,24 @@ namespace XLExpression
             if (obj is bool)
                 return (bool)obj;
 
-            if (obj.TryToNullableInt() == 0)//不能转为数字说明有值，也为true
+            if (obj.TryToNullableInt() == 0)//如果返回null,说明有值，但不能转为数字，也作为true
                 return false;
 
             return true;
         }
 
-        public static int TryToInt(this object? obj)
+        public static int TryToInt(this object? obj, bool isAllowNaN = true)
         {
             if (obj == null)
-                return 0;
+                return isAllowNaN ? 0 : throw new ValueError("not allowed null");
 
-            if (obj.GetType() == typeof(int))
+            if (obj!.GetType() == typeof(int))
                 return (int)obj;
 
             if (int.TryParse(obj.ToString(), out int result))
                 return result;
+            else if (!isAllowNaN)
+                throw new ArgumentException("not allowed: " + obj);
 
             return 0;
         }
@@ -92,28 +95,91 @@ namespace XLExpression
             return null;
         }
 
-        public static decimal TryToDecimal(this object? obj)
+        public static decimal TryToDecimal(this object? obj, bool isAllowNaN = true)
         {
             if (obj == null)
-                return 0;
+                return isAllowNaN ? 0 : throw new ValueError("not allowed null");
 
-            if (obj.GetType() == typeof(decimal))
+            if (obj!.GetType() == typeof(decimal))
                 return (decimal)obj;
 
-            decimal.TryParse(obj.ToString(), out decimal result);
+            var str = obj.ToString();
+
+            if(decimal.TryParse(str.TrimEnd('%'), out decimal result))
+            {
+                if (str.EndsWith('%'))
+                {
+                    result /= 100;
+                }
+            }
+            else if (!isAllowNaN)
+                throw new ArgumentException("not allowed: " + obj);
+
 
             return result;
         }
 
-        public static double TryToDouble(this object? obj)
+        public static double TryToDouble(this object? obj, bool isAllowNaN = true)
         {
             if (obj == null)
-                return 0;
+                return isAllowNaN ? 0 : throw new ValueError("not allowed null");
 
-            if (obj.GetType() == typeof(double))
+            if (obj!.GetType() == typeof(double))
                 return (double)obj;
 
-            double.TryParse(obj.ToString(), out double result);
+            var str = obj.ToString();
+
+            if(double.TryParse(str.TrimEnd('%'), out double result))
+            {
+                if (str.EndsWith('%'))
+                {
+                    result /= 100;
+                }
+            }
+            else if (!isAllowNaN)
+                throw new ValueError("not allowed: " + obj);
+
+            return result;
+        }
+
+        public static R[] Flat<T, R>(this T[,] array, Func<T, R> convert)
+        {
+            var result = new R[array.Length];
+            var col = array.GetLength(1);
+            for (var i = 0;i < array.GetLength(0); i++)
+            {
+                for (var j = 0; j < col; j++)
+                {
+                    result[i * col + j] = convert(array[i, j]);
+                }
+            }
+
+
+            return result;
+        }
+        public static T[] Flat<T>(this T[,] array)
+        {
+            return array.Flat(a => a);
+        }
+
+
+        /// <summary>
+        /// 将一维数组转为两维
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="colMaxCount">列宽，默认与数组等宽，即：[1, array.Length]</param>
+        /// <returns></returns>
+        public static T[,] Dimensional<T>(this T[] array, int? colMaxCount = null)
+        {
+            var colCount = colMaxCount ?? array.Length;
+            var rowCount = (int)Math.Ceiling(array.Length * 1.0 / colCount);
+
+            var result = new T[rowCount, colCount];
+            for(var i = 0; i < array.Length; i++)
+            {
+                result[i / colCount, i % colCount] = array[i];
+            }
 
             return result;
         }

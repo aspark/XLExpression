@@ -31,7 +31,7 @@ namespace XLExpression.Functions
 
         }
 
-        public FunctionDataContext(FunctionDataRow row)
+        internal FunctionDataContext(FunctionDataRow row)
         {
             _rows[0] = row;
         }
@@ -45,7 +45,7 @@ namespace XLExpression.Functions
             }
         }
 
-        public FunctionDataContext(List<FunctionDataRow> rows)
+        internal FunctionDataContext(List<FunctionDataRow> rows)
         {
             for(var i = 0; i < rows.Count; i++)
             {
@@ -57,7 +57,7 @@ namespace XLExpression.Functions
 
         public int ColCount => _rows.Max(m => m.Value.ColCount);
 
-        public FunctionDataRow this[int row]
+        internal FunctionDataRow this[int row]
         {
             get
             {
@@ -120,14 +120,7 @@ namespace XLExpression.Functions
 
                         var allData = row.AllData;
 
-                        var rowData = new object?[0, allData.Length];
-
-                        for(var i = 0; i < allData.Length; i++)
-                        {
-                            rowData[0, i] = allData[i];
-                        }
-
-                        return rowData;
+                        return allData.Dimensional();
                         
                     }
                     else if (index.Col.HasValue)
@@ -189,7 +182,7 @@ namespace XLExpression.Functions
     /// <summary>
     /// 行数据，会保留添加列的顺序
     /// </summary>
-    public class FunctionDataRow
+    internal class FunctionDataRow
     {
         //public FunctionDataRow(IDictionary<string, object> values)
         //{
