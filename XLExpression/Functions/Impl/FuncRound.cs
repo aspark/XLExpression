@@ -17,9 +17,9 @@ namespace XLExpression.Functions.Impl
             {
                 var precision = Convert.ToInt32(args[1]);
 
-                var factor = Math.Pow(10, precision);
+                var factor = (decimal)Math.Pow(10, precision);
 
-                return Math.Round(args[0].TryToDouble() * factor, MidpointRounding.AwayFromZero) / factor;
+                return Math.Round(args[0].TryToDecimal() * factor, MidpointRounding.AwayFromZero) / factor;
             }
 
             throw new ArgumentException("参数错误:" + this.GetType().Name);

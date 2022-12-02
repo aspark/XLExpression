@@ -17,13 +17,13 @@ namespace XLExpression.Functions.Impl
 
             if (args?.Length >= 2)//char, num
             {
-                double[]? range = args[0] is object[,] r ? r.Flat(a => a.TryToDouble()) : null;
+                decimal[]? range = args[0] is object[,] r ? r.Flat(a => a.TryToNullableDecimal()).Where(a => a.HasValue).Select(a => a.Value).ToArray() : null;
                 if (range == null)
                 {
                     throw new NumError("PercentRank参数 range 不是数组");
                 }
 
-                var x = args[1].TryToDouble(false);//float
+                var x = args[1].TryToDecimal(false);//float
 
                 var significance = args.Length > 2 ? args[2].TryToInt() : 3;
 
@@ -36,7 +36,7 @@ namespace XLExpression.Functions.Impl
 
     internal abstract class FuncPercentRankBase : FunctionBase, IFunction
     {
-        protected double Calc(double[] array, double x, int significance = 3, bool include01 = true)
+        protected decimal Calc(decimal[] array, decimal x, int significance = 3, bool include01 = true)
         {
             if (array == null || array.Length == 0)
             {
@@ -66,23 +66,23 @@ namespace XLExpression.Functions.Impl
 
             //significance = Math.Min(3, significance);
 
-            double slot = 0;
+            decimal slot = 0;
             if (include01)
             {
-                slot = 1.0 / (array.Length - 1);
+                slot = 1.0M / (array.Length - 1);
             }
             else
             {
-                slot = 1.0 / (array.Length + 1);
+                slot = 1.0M / (array.Length + 1);
             }
 
-            var k = (position + (include01 ? 0 : 1)) * slot;
+            decimal k = (position + (include01 ? 0 : 1)) * slot;
             if (array[position] != x)
             {
                 k = k + (x - array[position]) / (array[position + 1] - array[position])* slot;
             }
 
-            var tmp = Math.Pow(10, significance);
+            decimal tmp = (decimal)Math.Pow(10, significance);
 
 
             return Math.Truncate(k * tmp) / tmp;//截断的 //Math.Round

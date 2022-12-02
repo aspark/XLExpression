@@ -17,7 +17,7 @@ namespace XLExpression.Functions.Impl
 
             if (args?.Length == 1)
             {
-                var value = args[0].TryToDouble();
+                var value = args[0].TryToDecimal();
 
                 return value / 100;
             }

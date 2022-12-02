@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -16,13 +17,13 @@ namespace XLExpression.Functions.Impl
 
             if (args?.Length >= 2)//char, num
             {
-                double[]? range = args[0] is object[,] r ? r.Flat(a => a.TryToDouble()) : null;
+                decimal[]? range = args[0] is object[,] r ? r.Flat(a => a.TryToNullableDecimal()).Where(a => a.HasValue).Select(a => a.Value).ToArray() : null;
                 if (range == null)
                 {
                     throw new NumError("PercentRank参数 range 不是数组");
                 }
 
-                var x = args[1].TryToDouble(false);//float
+                var x = args[1].TryToDecimal(false);//float
 
                 var significance = args.Length > 2 ? args[2].TryToInt() : 3;
 

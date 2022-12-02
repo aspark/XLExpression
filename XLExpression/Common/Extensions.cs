@@ -75,7 +75,7 @@ namespace XLExpression
             if (obj == null)
                 return isAllowNaN ? 0 : throw new ValueError("not allowed null");
 
-            if (obj!.GetType() == typeof(int))
+            if (obj?.GetType() == typeof(int))
                 return (int)obj;
 
             if (int.TryParse(obj.ToString(), out int result))
@@ -91,7 +91,7 @@ namespace XLExpression
             if (obj == null)
                 return null;
 
-            if (obj.GetType() == typeof(int))
+            if (obj?.GetType() == typeof(int))
                 return (int)obj;
 
             if (int.TryParse(obj.ToString(), out int result))
@@ -105,7 +105,7 @@ namespace XLExpression
             if (obj == null)
                 return isAllowNaN ? 0 : throw new ValueError("not allowed null");
 
-            if (obj!.GetType() == typeof(decimal))
+            if (obj?.GetType() == typeof(decimal))
                 return (decimal)obj;
 
             var str = obj.ToString();
@@ -124,12 +124,35 @@ namespace XLExpression
             return result;
         }
 
+        public static decimal? TryToNullableDecimal(this object? obj)
+        {
+            if (obj == null)
+                return null;
+
+            if (obj?.GetType() == typeof(decimal))
+                return (decimal)obj;
+
+            var str = obj.ToString();
+
+            if (decimal.TryParse(str.TrimEnd('%'), out decimal result))
+            {
+                if (str.EndsWith('%'))
+                {
+                    result /= 100;
+                }
+
+                return result;
+            }
+
+            return null;
+        }
+
         public static double TryToDouble(this object? obj, bool isAllowNaN = true)
         {
             if (obj == null)
                 return isAllowNaN ? 0 : throw new ValueError("not allowed null");
 
-            if (obj!.GetType() == typeof(double))
+            if (obj?.GetType() == typeof(double))
                 return (double)obj;
 
             var str = obj.ToString();

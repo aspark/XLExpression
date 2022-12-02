@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -16,13 +17,13 @@ namespace XLExpression.Functions.Impl
 
             if (args?.Length >= 2)//char, num
             {
-                double[]? range = args[0] is object[,] r ? r.Flat(a=>a.TryToDouble()) : null;
+                decimal[]? range = args[0] is object[,] r ? r.Flat(a => a.TryToNullableDecimal()).Where(a => a.HasValue).Select(a => a.Value).ToArray() : null;
                 if (range == null)
                 {
                     throw new NumError("Percentile参数 range 不是数组");
                 }
 
-                var k = args[1].TryToDouble(false);//float
+                var k = args[1].TryToDecimal(false);//float
                 if (k > 1 || k < 0)
                 {
                     throw new NumError("Percentile参数 k 不在[0,1]范围内");
@@ -37,7 +38,7 @@ namespace XLExpression.Functions.Impl
 
     internal abstract class FuncPercentileBase : FunctionBase, IFunction
     {
-        protected double Calc(double[] array, double k, bool include01 = true)
+        protected decimal Calc(decimal[] array, decimal k, bool include01 = true)
         {
             if (array == null || array.Length == 0 || k < 0 || k > 1)
             {
@@ -52,28 +53,27 @@ namespace XLExpression.Functions.Impl
             if (k == 1)
                 return array[array.Length - 1];
 
-            if(include01 == false)
-            {
-                var exclude = 1.0 / (array.Length + 1);
-                if (k < exclude || k> array.Length * exclude)
-                    throw new NumError("Percentile参数 k 不在允许范围内");
-            }
-
-            double position;
+            decimal position;
             if (include01)
                 position = (array.Length - 1) * k;
             else
+            {
+                decimal exclude = 1.0M / (array.Length + 1);
+                if (k < exclude || k > array.Length * exclude)
+                    throw new NumError("Percentile参数 k 不在允许范围内");
+
                 position = (array.Length + 1) * k - 1;
+            }
 
             var sPostion = (int)Math.Truncate(position);
             var rPosition = position - sPostion;
 
-            var a = array[sPostion];
+            decimal a = array[sPostion];
 
             if (rPosition == 0)
                 return a;
 
-            var b = array[sPostion + 1];
+            decimal b = array[sPostion + 1];
 
             return a + (b - a) * rPosition;
         }
