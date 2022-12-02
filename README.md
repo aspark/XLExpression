@@ -49,3 +49,6 @@ has implemented:
 | Percentile       |                                           |
 | Percentile.Inc   |                                           |
 | Percentile.Exc   |                                           |
+| PercentRank      |                                           |
+| PercentRank.Inc  |                                           |
+| PercentRank.Exc  |                                           |
