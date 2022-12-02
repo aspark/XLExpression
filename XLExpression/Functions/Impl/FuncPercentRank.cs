@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq.Expressions;
 using System.Text;
+using System.Linq;
 
 namespace XLExpression.Functions.Impl
 {
     [Export(typeof(IFunction))]
     [ExportMetadata("Symbol", "PercentRank")]
-    internal class FuncPercentRank : FunctionBase, IFunction
+    internal class FuncPercentRank : FuncPercentRankBase //FunctionBase, IFunction
     {
         public override object? Invoke(IFunctionDataContext dataContext, object[] args)
         {
@@ -16,14 +17,75 @@ namespace XLExpression.Functions.Impl
 
             if (args?.Length >= 2)//char, num
             {
-                var findText = args[0].ToString();
-                var withinText = args[1].ToString();
-                //var num = args.Length > 1 ? (args[1].TryToNullableInt() ?? 1) : 1;
-                var start = (args.Length > 2 ? args[1] != null ? args[2].TryToInt() : 1 : 1);
-                
+                double[]? range = args[0] is object[,] r ? r.Flat(a => a.TryToDouble()) : null;
+                if (range == null)
+                {
+                    throw new NumError("PercentRank参数 range 不是数组");
+                }
+
+                var x = args[1].TryToDouble(false);//float
+
+                var significance = args.Length > 2 ? args[2].TryToInt() : 3;
+
+                return Calc(range, x, significance);
             }
 
             throw new ArgumentException("参数错误:" + this.GetType().Name);
+        }
+    }
+
+    internal abstract class FuncPercentRankBase : FunctionBase, IFunction
+    {
+        protected double Calc(double[] array, double x, int significance = 3, bool include01 = true)
+        {
+            if (array == null || array.Length == 0)
+            {
+                throw new ValueError("invalid arguments");
+            }
+
+            Array.Sort(array);
+
+            if (x < array[0] || x > array[array.Length - 1])
+                throw new NAError("x超出范围");
+
+            var position = 0;
+            for (; position < array.Length; position++)
+            {
+                if(array[position] > x)
+                {
+                    break;
+                }
+            }
+
+            position--;
+
+            //if (include01 == false)
+            //{
+            //    var exclude = 1.0 / (array.Length + 1);
+            //}
+
+            //significance = Math.Min(3, significance);
+
+            double slot = 0;
+            if (include01)
+            {
+                slot = 1.0 / (array.Length - 1);
+            }
+            else
+            {
+                slot = 1.0 / (array.Length + 1);
+            }
+
+            var k = (position + (include01 ? 0 : 1)) * slot;
+            if (array[position] != x)
+            {
+                k = k + (x - array[position]) / (array[position + 1] - array[position])* slot;
+            }
+
+            var tmp = Math.Pow(10, significance);
+
+
+            return Math.Truncate(k * tmp) / tmp;//截断的 //Math.Round
         }
     }
 }

@@ -22,7 +22,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void Test3()
+        public void Test2()
         {
             var exp = ExpressionBuilder.Instance.Build("Percentile.Inc(F2:H3, E2)");
 

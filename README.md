@@ -42,6 +42,7 @@ has implemented:
 | Date             |                                           |
 | Sum              | SUM(A1:A9), SUM(A1:D4), SUM(A1:A9, A1:D4) |
 | VLookup          |                                           |
+| Count            |                                           |
 | Left             |                                           |
 | Right            |                                           |
 | Find             |                                           |

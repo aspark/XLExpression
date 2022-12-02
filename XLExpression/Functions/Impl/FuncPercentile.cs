@@ -59,7 +59,7 @@ namespace XLExpression.Functions.Impl
                     throw new NumError("Percentile参数 k 不在允许范围内");
             }
 
-            double position = 0;
+            double position;
             if (include01)
                 position = (array.Length - 1) * k;
             else
