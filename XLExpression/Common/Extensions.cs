@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace XLExpression
 {
@@ -44,6 +45,35 @@ namespace XLExpression
             }
 
             return string.Compare(a.ToString(), b.ToString());
+        }
+
+        private static Regex _regMatchOp = new Regex("(?<op>[><=]{1,2})(?<val>.+)");
+
+        public static bool IsMatch(this object a, string b)
+        {
+            var op = "=";
+            var m = _regMatchOp.Match(b);
+            if (m.Success)
+            {
+                op = m.Groups["op"].Value;
+                b = m.Groups["val"].Value; ;
+            }
+
+            var compare = a.Compare(b);
+
+            switch (op)
+            {
+                case ">":
+                    return compare > 0;
+                case ">=":
+                    return compare >= 0;
+                case "<":
+                    return compare < 0;
+                case "<=":
+                    return compare <= 0;
+                default:
+                    return compare == 0;
+            }
         }
 
         public static string ToStringOrEmpty(this object? obj)

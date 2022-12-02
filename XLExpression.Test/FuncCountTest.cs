@@ -26,7 +26,7 @@ namespace XLExpression.Test
         }
 
         [Fact]
-        public void Test3()
+        public void Test2()
         {
             var exp = ExpressionBuilder.Instance.Build("Count(F2:G3, E2)");
 
