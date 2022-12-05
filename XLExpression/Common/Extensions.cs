@@ -37,11 +37,14 @@ namespace XLExpression
                 return DateTime.Compare(at, bt);
             }
 
-            //if(a is null)
+            //if (a is decimal || b is decimal)
+            //{
+            //    return decimal.Compare(a.TryToDecimal(), b.TryToDecimal());
+            //}
 
-            if (a is decimal || b is decimal)
+            if(IsNumber(a, out decimal ia) && IsNumber(b, out decimal ib))
             {
-                return decimal.Compare(a.TryToDecimal(), b.TryToDecimal());
+                return decimal.Compare(ia, ib);
             }
 
             return string.Compare(a.ToString(), b.ToString());
@@ -56,7 +59,7 @@ namespace XLExpression
             if (m.Success)
             {
                 op = m.Groups["op"].Value;
-                b = m.Groups["val"].Value; ;
+                b = m.Groups["val"].Value;
             }
 
             var compare = a.Compare(b);
@@ -98,6 +101,21 @@ namespace XLExpression
         public static bool IsNumber(this object? obj)
         {
             return double.TryParse(obj?.ToString() ?? "", out _);
+        }
+
+        public static bool IsNumber(this object? obj, out decimal a)
+        {
+            a = 0;
+
+            try
+            {
+                a = Convert.ToDecimal(obj);
+
+                return true;
+            }
+            catch { }
+
+            return false;
         }
 
         public static int TryToInt(this object? obj, bool isAllowNaN = true)
@@ -215,6 +233,7 @@ namespace XLExpression
 
             return result;
         }
+
         public static T[] Flat<T>(this T[,] array)
         {
             return array.Flat(a => a);
@@ -241,5 +260,46 @@ namespace XLExpression
 
             return result;
         }
+
+
+        public static void Visit<T>(this T[,] array, Action<T, (int Row, int Col)> callback)
+        {
+            array.Visit((v, i) =>
+            {
+                callback(v, i);
+                return Enum2DVisitResult.GoOn;
+            });
+        }
+
+        public static void Visit<T>(this T[,] array, Func<T, (int Row, int Col), Enum2DVisitResult> callback)
+        {
+            if (array != null)
+            {
+                for (var i = 0; i < array.GetLength(0); i++)
+                {
+                    for (var j = 0; j < array.GetLength(1); j++)
+                    {
+                        switch(callback(array[i, j], (i, j)))
+                        {
+                            case Enum2DVisitResult.Return:
+                                return;
+                            case Enum2DVisitResult.GotoNextLine:
+                                goto nextLine;
+                            default:
+                                continue;
+                        }
+                    }
+
+                nextLine:;
+                }
+            }
+        }
+    }
+
+    internal enum Enum2DVisitResult
+    {
+        GoOn = 0,
+        GotoNextLine,
+        Return
     }
 }
