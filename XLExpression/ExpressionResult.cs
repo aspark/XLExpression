@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using XLExpression.Functions;
 
 namespace XLExpression
@@ -28,12 +29,12 @@ namespace XLExpression
 
         public object Invoke(Dictionary<string, object>? args = null)
         {
-            return this.Invoke(args != null ? new FunctionDataContext(args!) : null);
+            return this.Invoke(args != null ? new DefaultDataContext(args!) : null);
         }
 
         public object Invoke(object args)
         {
-            var ctx = new FunctionDataContext();
+            var ctx = new DefaultDataContext();
             foreach(PropertyDescriptor property in TypeDescriptor.GetProperties(args))
             {
                 ctx[property.Name] = property.GetValue(args);
@@ -42,7 +43,7 @@ namespace XLExpression
             return this.Invoke(ctx);
         }
 
-        public object Invoke(IFunctionDataContext? dataContext)
+        public object Invoke(IDataContext? dataContext)
         {
             if (Exp.NodeType == ExpressionType.Call)
             {
@@ -56,19 +57,23 @@ namespace XLExpression
                     var lambda = Expression.Lambda(Exp, Parameters);
                     var args = Parameters.Select(arg =>
                     {
-                        if (arg.Type == typeof(IFunctionDataContext))
+                        if (arg.Type == typeof(IDataContext))
                         {
                             return dataContext;
                         }
                         else if (arg.Type == typeof(FuncRefArg))
                         {
-                            return new FuncRefArg(arg.Name);
+                            return new FuncRefArg(arg.Name); 
                         }
 
                         return (object?)null;
                     }).ToArray();
 
-                    return lambda.Compile().DynamicInvoke(args);
+                    using (new DefaultInvokeContext())
+                    {
+                        return lambda.Compile().DynamicInvoke(args);
+                    }
+
                 }
             }
 

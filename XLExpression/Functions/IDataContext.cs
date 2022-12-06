@@ -15,28 +15,34 @@ namespace XLExpression.Functions
     /// <summary>
     /// 数据平面
     /// </summary>
-    public interface IFunctionDataContext
+    public interface IDataContext
     {
         object? this[string name] { get; }
 
         object? this[int row, int col] { get; }
+
+        int RowCount { get; }
+
+        int ColCount { get; }
+
+        object?[,] this[int rowStart, int rowCount, int colStart, int colCount] { get; }
     }
 
-    public class FunctionDataContext : IFunctionDataContext
+    public class DefaultDataContext : IDataContext
     {
         ConcurrentDictionary<int, FunctionDataRow> _rows = new ConcurrentDictionary<int, FunctionDataRow>();
 
-        public FunctionDataContext()
+        public DefaultDataContext()
         {
 
         }
 
-        internal FunctionDataContext(FunctionDataRow row)
+        internal DefaultDataContext(FunctionDataRow row)
         {
             _rows[0] = row;
         }
 
-        public FunctionDataContext(IDictionary<string, object> values)
+        public DefaultDataContext(IDictionary<string, object> values)
         {
             //_rows[0] = new FunctionDataRow(values);
             foreach(var pair in values)
@@ -45,7 +51,7 @@ namespace XLExpression.Functions
             }
         }
 
-        internal FunctionDataContext(List<FunctionDataRow> rows)
+        internal DefaultDataContext(List<FunctionDataRow> rows)
         {
             for(var i = 0; i < rows.Count; i++)
             {
@@ -84,6 +90,24 @@ namespace XLExpression.Functions
             }
         }
 
+        public object?[,] this[int rowStart, int rowCount, int colStart, int colCount]
+        {
+            get
+            {
+                var datas = new object?[rowCount, colCount];
+                for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
+                {
+                    var row = this[rowStart + rowIndex];
+                    for (var colIndex = 0; colIndex < colCount; colIndex++)
+                    {
+                        datas[rowIndex, colIndex] = row?[colStart + colIndex];
+                    }
+                }
+
+                return datas;
+            }
+        }
+
         public object? this[string name]
         {
             get 
@@ -93,19 +117,8 @@ namespace XLExpression.Functions
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
                     var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row.Value - range[0].Row.Value + 1 : RowCount;//行数
                     var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col.Value - range[0].Col.Value + 1 : ColCount;//列数
-                    var datas = new object?[rowCount, colCount];
-                    var rowTotalCount = datas.GetLength(0);
-                    var colTotalCount = datas.GetLength(1);
-                    for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
-                    {
-                        var row = this[(range[0].Row ?? 0) + rowIndex];
-                        for (var colIndex = 0; colIndex < colCount; colIndex++)
-                        {
-                            datas[rowIndex, colIndex] = row?[(range[0].Col ?? 0) + colIndex];
-                        }
-                    }
 
-                    return datas;
+                    return this[range[0].Row ?? 0, rowCount, range[0].Col ?? 0, colCount];
                 }
                 else
                 {
@@ -140,14 +153,18 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row - range[0].Row + 1 : this.RowCount;//行数
-                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col - range[0].Col + 1 : this.ColCount;//列数
+                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row.Value - range[0].Row.Value + 1 : this.RowCount;//行数
+                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col.Value - range[0].Col.Value + 1 : this.ColCount;//列数
+
+                    var rowStart = range[0].Row ?? 0;
+                    var colStart = range[0].Col ?? 0;
+
                     for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        var row = this[(range[0].Row??0) + rowIndex];
+                        var row = this[rowStart + rowIndex];
                         for (var colIndex = 0; colIndex < colCount; colIndex++)
                         {
-                            row[(range[0].Col ?? 0) + colIndex] = value;
+                            row[colStart + colIndex] = value;
                         }
                     }
                 }

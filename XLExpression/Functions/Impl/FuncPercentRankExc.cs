@@ -11,7 +11,7 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", "PercentRank.Exc")]
     internal class FuncPercentRankExc : FuncPercentRankBase// FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
             args = UnwarpArgs(dataContext, args);
 

@@ -10,7 +10,7 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", "vlookup")]
     internal class FuncVLookup : FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
             var realArgs = UnwarpArgs(dataContext, args);
 

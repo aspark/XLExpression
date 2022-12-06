@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <Authors>aspark</Authors>
-    <Version>1.0.1-alpha</Version>
+    <Version>1.0.2</Version>
     <Title>parse excel formula to C# expression</Title>
     <Copyright>MIT</Copyright>
     <PackageProjectUrl>https://github.com/aspark/XLExpression</PackageProjectUrl>
@@ -15,6 +15,13 @@
 
   <ItemGroup>
     <None Remove="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

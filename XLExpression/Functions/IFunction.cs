@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace XLExpression.Functions
 {
     public interface IFunction
     {
-        object? Invoke(IFunctionDataContext dataContext, object[] args);
+        object? Invoke(IDataContext dataContext, object[] args);
     }
     public interface IFunctionMetadata
     {
@@ -31,11 +32,11 @@ namespace XLExpression.Functions
 
     internal abstract class FunctionBase: IFunction
     {
-        public abstract object? Invoke(IFunctionDataContext dataContext, object[] args);
-
         //因每个函数对参数的使用方式不一样
         //所以，由个函数自身处理参数判断。不在基类统一处理，如：Sum(a, b)，如果统一处理，需要将参数展开
+        public abstract object? Invoke(IDataContext dataContext, object[] args);
 
+        public IInvokeContext CurrentInvokeContext => DefaultInvokeContext.Current;
 
         /// <summary>
         /// 
@@ -44,7 +45,7 @@ namespace XLExpression.Functions
         /// <param name="args"></param>
         /// <param name="isRange">如果是Range，只解析开始与结束两个参数</param>
         /// <returns></returns>
-        public object[] UnwarpArgs(IFunctionDataContext dataContext, object[] args)//, bool isRange = false
+        public object[] UnwarpArgs(IDataContext dataContext, object[] args)//, bool isRange = false
         {
             if (args == null)
                 return new object[0];
@@ -69,6 +70,7 @@ namespace XLExpression.Functions
 
             return unWrapped;
         }
+
     }
 
 }

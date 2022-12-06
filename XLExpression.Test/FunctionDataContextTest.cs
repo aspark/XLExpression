@@ -10,7 +10,7 @@ namespace XLExpression.Test
         [Fact]
         public void ExcelNameTest()
         {
-            var context = new FunctionDataContext(new Dictionary<string, object>
+            var context = new DefaultDataContext(new Dictionary<string, object>
             {
                 //F:5 G:6 H:7
                 // null, null, null
