@@ -34,22 +34,34 @@ namespace XLExpression.Functions.Impl
 
                 if (sumRange.GetLength(0) < rangeRows || sumRange.GetLength(1) < rangeCols)//excel会取未在的sumrange范围中的值
                 {
-                    if(oldArgs[2] is FuncRefArg refArg)
+                    object?[,] getRange(string name)
                     {
-                        var pos = refArg.Name.Replace("$", "").Split(":").Select(ExcelHelper.ConvertNameToPosition).ToArray();
+                        var pos = name.Replace("$", "").Split(":").Select(ExcelHelper.ConvertNameToPosition).ToArray();
                         var start = pos.First();
                         var end = pos.Last();
 
                         var rowStart = start.Row ?? 0;
                         var colStart = start.Col ?? 0;
-                        var rowCount = end.Row.HasValue ? end.Row.Value - rowStart + 1: dataContext.RowCount;
-                        var colCount = end.Col.HasValue ? end.Col.Value - colStart + 1: dataContext.ColCount;
+                        var rowCount = rangeRows;// end.Row.HasValue ? end.Row.Value - rowStart + 1 : dataContext.RowCount;
+                        var colCount = rangeCols;// end.Col.HasValue ? end.Col.Value - colStart + 1 : dataContext.ColCount;
 
-                        sumRange = dataContext[rowStart, rowCount, colStart, colCount];
+                        return dataContext[rowStart, rowCount, colStart, colCount];
+                    }
+
+                    if(oldArgs[2] is FuncRefArg refArg)
+                    {
+                        sumRange = getRange(refArg.Name);
                     }
                     else
                     {
-                        throw new NotImplementedException("not support sum range less than range");
+                        //从执行上下文中获取range的解析结果
+                        var name = base.CurrentInvokeContext?.GetResultRange(oldArgs[2]);
+                        if (!string.IsNullOrWhiteSpace(name))
+                        {
+                            sumRange = getRange(name);
+                        }
+                        else
+                            throw new NotImplementedException("not support sum range less than range");
                     }
                 }
 

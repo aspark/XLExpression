@@ -28,21 +28,21 @@ namespace XLExpression.Functions
         object?[,] this[int rowStart, int rowCount, int colStart, int colCount] { get; }
     }
 
-    public class FunctionDataContext : IDataContext
+    public class DefaultDataContext : IDataContext
     {
         ConcurrentDictionary<int, FunctionDataRow> _rows = new ConcurrentDictionary<int, FunctionDataRow>();
 
-        public FunctionDataContext()
+        public DefaultDataContext()
         {
 
         }
 
-        internal FunctionDataContext(FunctionDataRow row)
+        internal DefaultDataContext(FunctionDataRow row)
         {
             _rows[0] = row;
         }
 
-        public FunctionDataContext(IDictionary<string, object> values)
+        public DefaultDataContext(IDictionary<string, object> values)
         {
             //_rows[0] = new FunctionDataRow(values);
             foreach(var pair in values)
@@ -51,7 +51,7 @@ namespace XLExpression.Functions
             }
         }
 
-        internal FunctionDataContext(List<FunctionDataRow> rows)
+        internal DefaultDataContext(List<FunctionDataRow> rows)
         {
             for(var i = 0; i < rows.Count; i++)
             {

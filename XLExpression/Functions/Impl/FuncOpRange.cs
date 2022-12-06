@@ -13,18 +13,23 @@ namespace XLExpression.Functions.Impl
     {
         public override object? Invoke(IDataContext dataContext, object[] args)
         {
-            //args = base.UnwarpArgs(dataContext, args);
+            var realArgs = base.UnwarpArgs(dataContext, args);
 
             if (args?.Length == 2)
             {
-                var start = args[0] is FuncRefArg arg1 ? arg1.Name : args[0].ToString();
-                var end = args[1] is FuncRefArg arg2 ? arg2.Name : args[1].ToString();
+                var start = args[0] is FuncRefArg arg1 ? arg1.Name : realArgs[0].ToString();
+                var end = args[1] is FuncRefArg arg2 ? arg2.Name : realArgs[1].ToString();
+                var name = start + ":" + end;
 
-                return dataContext[start + ":" + end];
+                var result = dataContext[name];
+
+                base.CurrentInvokeContext?.MapResultToRange(result, name);
+
+                return result;
             }
             else if (args?.Length == 1)
             {
-                var cell = args[0] is FuncRefArg arg1 ? arg1.Name : args[0].ToString();
+                var cell = args[0] is FuncRefArg arg1 ? arg1.Name : realArgs[0].ToString();
 
                 return dataContext[cell];
             }

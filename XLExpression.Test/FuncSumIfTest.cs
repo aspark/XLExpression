@@ -49,16 +49,33 @@ namespace XLExpression.Test
             result = exp.Invoke(new Dictionary<string, object> { { "F2", 1 }, { "G2", 2 }, { "F3", 11 }, { "G3", 12 }, { "F4", 20 }, { "G4", 13 } });
             result.ShouldBe(25);
 
-            ////exceed range
-            //exp = ExpressionBuilder.Instance.Build("SUMIF(F:F, \">3\", G2:G4)");
-            //result = exp.Invoke(new Dictionary<string, object> {
-            //    { "F2", 1 },  { "G2", 2 },
-            //    { "F3", 11 }, { "G3", 12 },
-            //    { "F4", 20 }, { "G4", 13 },
-            //    { "F5", 21 }, { "G5", 14 }
-            //});
+            //exceed range
+            exp = ExpressionBuilder.Instance.Build("SUMIF(F:F, \">3\", G2:G4)");
+            result = exp.Invoke(new Dictionary<string, object> {
+                { "F2", 1 },  { "G2", 2 },
+                { "F3", 11 }, { "G3", 12 },
+                { "F4", 20 }, { "G4", 13 },
+                { "F5", 21 }, { "G5", 14 }
+            });
+            result.ShouldBe(27);
 
-            //result.ShouldBe(39);
+            exp = ExpressionBuilder.Instance.Build("SUMIF(F2:F3, \">3\", G2:G4)");
+            result = exp.Invoke(new Dictionary<string, object> {
+                { "F2", 1 },  { "G2", 2 },
+                { "F3", 11 }, { "G3", 12 },
+                { "F4", 20 }, { "G4", 13 },
+                { "F5", 21 }, { "G5", 14 }
+            });
+            result.ShouldBe(12);
+
+            exp = ExpressionBuilder.Instance.Build("SUMIF(F2:G5, \">20\", G2:G4)");
+            result = exp.Invoke(new Dictionary<string, object> {
+                { "F2", 1 },  { "G2", 2 },  { "H2", 3 },
+                { "F3", 11 }, { "G3", 12 }, { "H3", 13 },
+                { "F4", 20 }, { "G4", 21 }, { "H4", 22 },
+                { "F5", 21 }, { "G5", 22 }, { "H5", 23 }
+            });
+            result.ShouldBe(67);
         }
 
         [Fact]
