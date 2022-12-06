@@ -13,7 +13,7 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", "CountIf")]
     internal class FuncCountIf : FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
             args = UnwarpArgs(dataContext, args);
 

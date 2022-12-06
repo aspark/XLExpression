@@ -9,7 +9,7 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", "*")]
     internal class FuncOpMul : FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
             args = UnwarpArgs(dataContext, args);
 

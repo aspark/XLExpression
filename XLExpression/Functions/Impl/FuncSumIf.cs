@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using XLExpression.Common;
 
 namespace XLExpression.Functions.Impl
 {
@@ -11,22 +12,45 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", "sumif")]
     internal class FuncSumIf : FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
+            var oldArgs = args;
             args = UnwarpArgs(dataContext, args);
 
             if (args?.Length >= 2)
             {
                 object[,]? range = args[0] is object[,] r ? r : null;
-                object[,]? criteria = args[1] is object[,] c ? c : new object[1, 1] { { args[1].ToString() } };
-                object[,]? sumRange = args.Length > 2 ? (args[2] is object[,] s) ? s : range : range;
-
-                var sumRangeRows = sumRange.GetLength(0);
-                var sumRangeCols = sumRange.GetLength(1);
-
-                if (sumRangeRows < range.GetLength(0) || sumRangeCols < range.GetLength(1))//excel会取未在的sumrange范围中的值
+                
+                if(range == null)
                 {
-                    throw new NotImplementedException("not support sum range less than range");
+                    throw new ValueError("range is null");
+                }
+                
+                object?[,] criteria = args[1] is object[,] c ? c : new object[1, 1] { { args[1].ToString() } };
+                object?[,] sumRange = args.Length > 2 ? (args[2] is object[,] s) ? s : range : range;
+
+                var rangeRows = range.GetLength(0);
+                var rangeCols = range.GetLength(1);
+
+                if (sumRange.GetLength(0) < rangeRows || sumRange.GetLength(1) < rangeCols)//excel会取未在的sumrange范围中的值
+                {
+                    if(oldArgs[2] is FuncRefArg refArg)
+                    {
+                        var pos = refArg.Name.Replace("$", "").Split(":").Select(ExcelHelper.ConvertNameToPosition).ToArray();
+                        var start = pos.First();
+                        var end = pos.Last();
+
+                        var rowStart = start.Row ?? 0;
+                        var colStart = start.Col ?? 0;
+                        var rowCount = end.Row.HasValue ? end.Row.Value - rowStart + 1: dataContext.RowCount;
+                        var colCount = end.Col.HasValue ? end.Col.Value - colStart + 1: dataContext.ColCount;
+
+                        sumRange = dataContext[rowStart, rowCount, colStart, colCount];
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("not support sum range less than range");
+                    }
                 }
 
                 var result = new object[criteria.GetLength(0), criteria.GetLength(1)];
@@ -46,14 +70,7 @@ namespace XLExpression.Functions.Impl
                         range.Visit((o, i) => {
                             if (o.IsMatch(value))
                             {
-                                //if(i.Row>=sumRangeRows || i.Col >= sumRangeRows)
-                                //{
-                                //    sum += 0;//todo:从dataContext来
-                                //}
-                                //else
-                                //{
-                                    sum += sumRange[i.Row, i.Col].TryToDecimal();
-                                //}
+                                sum += sumRange[i.Row, i.Col].TryToDecimal();
                             }
                         });
 

@@ -42,7 +42,7 @@ namespace XLExpression
             return this.Invoke(ctx);
         }
 
-        public object Invoke(IFunctionDataContext? dataContext)
+        public object Invoke(IDataContext? dataContext)
         {
             if (Exp.NodeType == ExpressionType.Call)
             {
@@ -56,7 +56,7 @@ namespace XLExpression
                     var lambda = Expression.Lambda(Exp, Parameters);
                     var args = Parameters.Select(arg =>
                     {
-                        if (arg.Type == typeof(IFunctionDataContext))
+                        if (arg.Type == typeof(IDataContext))
                         {
                             return dataContext;
                         }

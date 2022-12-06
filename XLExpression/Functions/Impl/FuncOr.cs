@@ -10,7 +10,7 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", "or")]
     internal class FuncOr : FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
             args = UnwarpArgs(dataContext, args);
 

@@ -62,7 +62,7 @@ namespace XLExpression
 
                     var fcInstance = Expression.Property(null, typeof(FunctionFactory).GetProperty(nameof(FunctionFactory.Instance)));
                     var fnOperator = Expression.Call(fcInstance, typeof(FunctionFactory).GetMethod(nameof(FunctionFactory.GetOperator)), Expression.Constant(fnNode.Name));//Factory.Instance.GetOperator("").Invoke(object[])
-                    var dataContext = parameters.GetOrAdd("dataContext", () => Expression.Parameter(typeof(IFunctionDataContext), "dataContext"));
+                    var dataContext = parameters.GetOrAdd("dataContext", () => Expression.Parameter(typeof(IDataContext), "dataContext"));
 
                     return Expression.Call(fnOperator, typeof(IFunction).GetMethod(nameof(IFunction.Invoke)), dataContext, Expression.NewArrayInit(typeof(object), arguments.ToArray()));
                 }

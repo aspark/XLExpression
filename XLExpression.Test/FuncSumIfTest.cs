@@ -48,6 +48,17 @@ namespace XLExpression.Test
             exp = ExpressionBuilder.Instance.Build("SUMIF(F:F, \">3\", G:G)");
             result = exp.Invoke(new Dictionary<string, object> { { "F2", 1 }, { "G2", 2 }, { "F3", 11 }, { "G3", 12 }, { "F4", 20 }, { "G4", 13 } });
             result.ShouldBe(25);
+
+            ////exceed range
+            //exp = ExpressionBuilder.Instance.Build("SUMIF(F:F, \">3\", G2:G4)");
+            //result = exp.Invoke(new Dictionary<string, object> {
+            //    { "F2", 1 },  { "G2", 2 },
+            //    { "F3", 11 }, { "G3", 12 },
+            //    { "F4", 20 }, { "G4", 13 },
+            //    { "F5", 21 }, { "G5", 14 }
+            //});
+
+            //result.ShouldBe(39);
         }
 
         [Fact]

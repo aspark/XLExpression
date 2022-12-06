@@ -11,7 +11,7 @@ namespace XLExpression.Functions.Impl
     [ExportMetadata("Symbol", ":")]
     internal class FuncOpRange : FunctionBase, IFunction
     {
-        public override object? Invoke(IFunctionDataContext dataContext, object[] args)
+        public override object? Invoke(IDataContext dataContext, object[] args)
         {
             //args = base.UnwarpArgs(dataContext, args);
 
