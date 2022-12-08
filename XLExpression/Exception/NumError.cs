@@ -4,7 +4,7 @@ using System.Text;
 
 namespace XLExpression
 {
-    internal class NumError : XLException
+    public class NumError : XLException
     {
         public NumError()
         {

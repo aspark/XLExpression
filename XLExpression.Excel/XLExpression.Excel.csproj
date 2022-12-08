@@ -6,11 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\XLExpression\Common\Extensions.cs" Link="Common\Extensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\XLExpression\XLExpression.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
 
 </Project>

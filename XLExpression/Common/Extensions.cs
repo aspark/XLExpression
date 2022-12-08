@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -247,13 +248,13 @@ namespace XLExpression
         /// <param name="array"></param>
         /// <param name="colMaxCount">列宽，默认与数组等宽，即：[1, array.Length]</param>
         /// <returns></returns>
-        public static T[,] Dimensional<T>(this T[] array, int? colMaxCount = null)
+        public static T[,] Dimensional<T>(this IList<T> array, int? colMaxCount = null)
         {
-            var colCount = colMaxCount ?? array.Length;
-            var rowCount = (int)Math.Ceiling(array.Length * 1.0 / colCount);
+            var colCount = colMaxCount ?? array.Count;
+            var rowCount = (int)Math.Ceiling(array.Count * 1.0 / colCount);
 
             var result = new T[rowCount, colCount];
-            for(var i = 0; i < array.Length; i++)
+            for(var i = 0; i < array.Count; i++)
             {
                 result[i / colCount, i % colCount] = array[i];
             }
@@ -271,7 +272,7 @@ namespace XLExpression
             });
         }
 
-        public static void Visit<T>(this T[,] array, Func<T, (int Row, int Col), Enum2DVisitResult> callback)
+        internal static void Visit<T>(this T[,] array, Func<T, (int Row, int Col), Enum2DVisitResult> callback)
         {
             if (array != null)
             {

@@ -23,7 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Attachments\" />
+    <ProjectReference Include="..\XLExpression.Excel\XLExpression.Excel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Attachments\XLExpression.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

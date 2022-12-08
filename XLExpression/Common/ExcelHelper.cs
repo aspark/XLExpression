@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace XLExpression.Common
 {
-    internal class ExcelHelper
+    public class ExcelHelper
     {
         private static List<char> colNames = new List<char> { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
         private static Regex _regCellA1Name = new Regex(@"(?<col>[A-Z]*)(?<row>[0-9]*)");//A1
@@ -16,8 +16,11 @@ namespace XLExpression.Common
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ExcelCellPostion ConvertNameToPosition(string name)
+        public static ExcelCellPostion ConvertNameToPosition(string? name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                return (null, null);
+
             //var chars = new char[]
             var m = _regCellA1Name.Match(name);
             int? col = null;
@@ -106,7 +109,7 @@ namespace XLExpression.Common
     }
 
 
-    internal struct ExcelCellPostion
+    public struct ExcelCellPostion
     {
         public int? Col;
         public int? Row;
