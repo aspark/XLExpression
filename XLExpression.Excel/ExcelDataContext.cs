@@ -67,7 +67,7 @@ namespace XLExpression.Excel
                         var colData = new object?[RowCount, 1];
                         for (var rowIndex = 0; rowIndex < colData.GetLength(0); rowIndex++)
                         {
-                            colData[rowIndex, 0] = _sheet.Rows[rowIndex]?[index.Col.Value]?.Value;
+                            colData[rowIndex, 0] = _sheet.Rows[rowIndex]?.Cells[index.Col.Value]?.Value;
                         }
                     }
 
@@ -80,7 +80,7 @@ namespace XLExpression.Excel
         {
             get
             {
-                return _sheet.Rows[row][col]?.Value;
+                return _sheet.Rows[row].Cells[col]?.Value;
             }
         }
 
@@ -95,7 +95,7 @@ namespace XLExpression.Excel
                     var row = _sheet.Rows[rowStart + rowIndex];
                     for (var colIndex = 0; colIndex < colCount; colIndex++)
                     {
-                        datas[rowIndex, colIndex] = row?[colStart + colIndex]?.Value;
+                        datas[rowIndex, colIndex] = row?.Cells[colStart + colIndex]?.Value;
                     }
                 }
 
@@ -116,7 +116,7 @@ namespace XLExpression.Excel
         {
             get
             {
-                return _sheet.Colmuns.Count;
+                return _sheet.ColumnNames.Count;
             }
         }
 

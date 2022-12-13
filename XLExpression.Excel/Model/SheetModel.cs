@@ -1,6 +1,8 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -14,8 +16,12 @@ namespace XLExpression.Excel.Model
 {
     public class SheetModel
     {
+        private Sheet _xSheet = null;
+
         internal SheetModel(ExcelModel excel, WorkbookPart xWorkbookPart, Sheet xSheet)
         {
+            _xSheet = xSheet;
+
             Excel = excel;
             Id = xSheet.Id?.Value;
             Name = xSheet.Name?.Value;
@@ -32,11 +38,16 @@ namespace XLExpression.Excel.Model
 
             ParseDimension(xWorksheet);
 
-            var xSheetView = xWorksheet.GetFirstChild<SheetViews>().Elements<SheetView>().FirstOrDefault();
+            var xSheetView = xWorksheet.GetFirstChild<SheetViews>()?.Elements<SheetView>().FirstOrDefault();
             IsSelected = xSheetView?.TabSelected?.Value ?? false;
 
+            Rows = new RowsCollection(this, xSheet);
+
             var xSheetData = xWorksheet.GetFirstChild<SheetData>();
-            Rows = xSheetData?.Elements<Row>().Select(r => new RowModel(this, xWorkbookPart, r)).ToList() ?? new List<RowModel>();
+            foreach (var r in xSheetData?.Elements<Row>())
+            {
+                Rows[(int)r.RowIndex.Value - 1] = new RowModel(this, xWorkbookPart, r);
+            }
         }
 
         public ExcelModel Excel { get; private set; }
@@ -47,14 +58,12 @@ namespace XLExpression.Excel.Model
 
         public bool IsSelected { get; set; }
 
-        //private ConcurrentDictionary<int, RowModel> _rows = new ConcurrentDictionary<int, RowModel>();
+        private HashSet<string> _columnNames = new HashSet<string>();
+        public ICollection<string> ColumnNames => _columnNames;
 
-        private HashSet<string> _columns = new HashSet<string>();
-        public ICollection<string> Colmuns => _columns;
-
-        internal void RegisterColumn(string col)
+        internal void RegisterColumnName(string col)
         {
-            _columns.Add(col);
+            _columnNames.Add(col);
         }
 
         private void ParseDimension(Worksheet xWorksheet)
@@ -69,13 +78,15 @@ namespace XLExpression.Excel.Model
                 {
                     for (var i = 0; i <= max.Col.Value; i++)
                     {
-                        RegisterColumn(ExcelHelper.ConvertIndexToName(i));
+                        RegisterColumnName(ExcelHelper.ConvertIndexToName(i));
                     }
                 }
             }
         }
 
-        public IList<RowModel> Rows { get; private set; }
+        public RowsCollection Rows { get; private set; }
+
+        public bool HasChanged { get; internal set; }
 
         private Dictionary<uint, (string formula, ExcelCellPostion position)> _dicSharedFormula = new Dictionary<uint, (string formula, ExcelCellPostion position)>();
 
@@ -106,6 +117,50 @@ namespace XLExpression.Excel.Model
             }
 
             return string.Empty;
+        }
+    }
+
+    public class RowsCollection : IEnumerable<RowModel>
+    {
+        private SheetModel _sheet = null;
+        private Sheet _xSheet = null;
+        private ConcurrentDictionary<int, RowModel> _rows = new ConcurrentDictionary<int, RowModel>();
+        
+        internal RowsCollection(SheetModel sheet, Sheet xSheet)
+        {
+            _sheet = sheet;
+            _xSheet = xSheet;
+        }
+
+        public RowModel this[int row]
+        {
+            get
+            {
+                if (_rows.TryGetValue(row, out var value))
+                    return value;
+
+                throw new IndexOutOfRangeException("row index out of range");
+            }
+            set
+            {
+                _rows.AddOrUpdate(row, value, (k, o) => value);
+                if (row > MaxIndex)
+                    MaxIndex = row;
+            }
+        }
+
+        public int Count => _rows.Count;
+
+        public int MaxIndex { get; private set; }
+
+        public IEnumerator<RowModel> GetEnumerator()
+        {
+            return _rows.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _rows.Values.GetEnumerator();
         }
     }
 }

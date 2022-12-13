@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -248,15 +249,19 @@ namespace XLExpression
         /// <param name="array"></param>
         /// <param name="colMaxCount">列宽，默认与数组等宽，即：[1, array.Length]</param>
         /// <returns></returns>
-        public static T[,] Dimensional<T>(this IList<T> array, int? colMaxCount = null)
+        public static T[,] Dimensional<T>(this IEnumerable<T> array, int? colMaxCount = null)
         {
-            var colCount = colMaxCount ?? array.Count;
-            var rowCount = (int)Math.Ceiling(array.Count * 1.0 / colCount);
+            var count = array.Count();
+            var colCount = colMaxCount ?? count;
+            var rowCount = (int)Math.Ceiling(count * 1.0 / colCount);
 
             var result = new T[rowCount, colCount];
-            for(var i = 0; i < array.Count; i++)
+            var i = 0;
+            foreach(var item in array)
             {
-                result[i / colCount, i % colCount] = array[i];
+                result[i / colCount, i % colCount] = item;
+
+                i++;
             }
 
             return result;

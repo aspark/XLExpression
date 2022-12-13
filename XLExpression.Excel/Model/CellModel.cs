@@ -9,13 +9,18 @@ namespace XLExpression.Excel.Model
 {
     public class CellModel
     {
-        public CellModel()
-        {
+        private Cell _xCell = null;
+        private bool _isInitial = true;
 
-        }
+        //public CellModel()
+        //{
+
+        //}
 
         internal CellModel(RowModel row, WorkbookPart workbookPart, Cell xCell)
         {
+            _xCell = xCell;
+
             this.Row = row;
 
             //<c r = "A3" s = "2" t = "s" ><v>8</ v></c> //字符
@@ -94,11 +99,25 @@ namespace XLExpression.Excel.Model
                     this.ValueType = EnumCellType.Formula;
                 }
             }
+
+            _isInitial = false;
         }
 
         public RowModel Row { get; private set; }
 
-        public object? Value { get; private set; }
+        private object? _value = null;
+        public object? Value
+        {
+            get => _value;
+            set {
+                _value = value;
+
+                if (!_isInitial)
+                {
+                    _xCell.CellValue = new CellValue(value?.ToString() ?? "");
+                }
+            }
+        }
 
         public EnumCellType ValueType { get; }
 

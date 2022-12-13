@@ -43,6 +43,24 @@ namespace XLExpression.Excel
             return dic;
         }
 
+        public void CalculateAll()
+        {
+            foreach (var sheet in excel.Sheets)
+            {
+                foreach (var row in sheet.Rows)
+                {
+                    foreach (var cell in row.Cells)
+                    {
+                        if (cell.ValueType == EnumCellType.Formula)
+                        {
+                            
+                        }
+                    }
+                }
+            }
+
+        }
+
         public void Calculate()
         {
 

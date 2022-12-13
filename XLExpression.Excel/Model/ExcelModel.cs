@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,30 +11,30 @@ namespace XLExpression.Excel.Model
 {
     //https://www.todaysoftmag.com/article/848/getting-started-with-openxml
 
-    public class ExcelModel
+    public class ExcelModel: IDisposable
     {
+        SpreadsheetDocument _xDoc;
+
         public ExcelModel(string fileName)
         {
-            using (var doc = SpreadsheetDocument.Open(fileName, false))
-            {
-                Init(doc);
-            }
+            _xDoc = SpreadsheetDocument.Open(fileName, false);
+            Init();
         }
 
         public ExcelModel(Stream xlsx)
         {
-            using (var doc = SpreadsheetDocument.Open(xlsx, false))
-            {
-                Init(doc);
-            }
+            _xDoc = SpreadsheetDocument.Open(xlsx, false);
+            Init();
         }
 
-        private void Init(SpreadsheetDocument doc)
+        private void Init()
         {
-            ParseSharedStringTable(doc.WorkbookPart);
+            var wbPart = _xDoc.WorkbookPart;
 
-            if (doc.WorkbookPart?.Workbook.Sheets != null)
-                Sheets = doc.WorkbookPart.Workbook.Sheets.Descendants<Sheet>().Select(s => new SheetModel(this, doc.WorkbookPart, s)).ToList();
+            ParseSharedStringTable(wbPart);
+
+            if (wbPart?.Workbook.Sheets != null)
+                Sheets = wbPart.Workbook.Sheets.Descendants<Sheet>().Select(s => new SheetModel(this, wbPart, s)).ToList();
         }
 
         public IList<SheetModel> Sheets { get; private set; } = new List<SheetModel>();
@@ -66,6 +67,19 @@ namespace XLExpression.Excel.Model
             }
 
             return String.Empty;
+        }
+
+        private void ParseStyleFormat(WorkbookPart? xWorkbookPart)
+        {
+            if (xWorkbookPart == null)
+                return;
+
+            xWorkbookPart.GetPartsOfType<StylesPart>();
+        }
+
+        public void Dispose()
+        {
+            _xDoc?.Dispose();
         }
     }
 }
