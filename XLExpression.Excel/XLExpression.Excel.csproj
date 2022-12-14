@@ -7,6 +7,9 @@
     <RepositoryUrl>https://github.com/aspark/XLExpression</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>1.0.3</Version>
+    <Title>calculate excel formula</Title>
+    <Authors>aspark</Authors>
+    <PackageProjectUrl>https://github.com/aspark/XLExpression</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

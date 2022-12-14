@@ -18,6 +18,8 @@ var result = exp.Invoke(new { F2 = 1, G2 = 0 });
 
 ## 2. parse excel file and execute all formula
 
+> install https://www.nuget.org/packages/XLExpression.Excel
+
 ```C#
 var builder = new FormulaBuilder("Attachments/XLExpression.xlsx");
 var result = builder.CalculateAll();
