@@ -11,6 +11,9 @@ namespace XLExpression.Excel.Model
 {
     //https://www.todaysoftmag.com/article/848/getting-started-with-openxml
 
+    /// <summary>
+    /// 使用OpenXML，解析Excel
+    /// </summary>
     public class ExcelModel: IDisposable
     {
         SpreadsheetDocument _xDoc;

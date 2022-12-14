@@ -16,6 +16,9 @@ namespace XLExpression
             Exp = exp;
         }
 
+        /// <summary>
+        /// 生成的表达式树
+        /// </summary>
         public Expression Exp { get; private set; }
 
         /// <summary>
@@ -27,11 +30,21 @@ namespace XLExpression
 
         public bool HasRel { get; internal set; }
 
+        /// <summary>
+        /// 执行公式
+        /// </summary>
+        /// <param name="args">使用字典传递参数，如：<code>{{"A1", 1}, {"A2", 2}}</code></param>
+        /// <returns></returns>
         public object Invoke(Dictionary<string, object>? args = null)
         {
             return this.Invoke(args != null ? new DefaultDataContext(args!) : null);
         }
 
+        /// <summary>
+        /// 执行公式
+        /// </summary>
+        /// <param name="args">使用匿名类传递参数，如：<code>{A1:1, A2:2}</code></param>
+        /// <returns></returns>
         public object Invoke(object args)
         {
             var ctx = new DefaultDataContext();
@@ -43,6 +56,11 @@ namespace XLExpression
             return this.Invoke(ctx);
         }
 
+        /// <summary>
+        /// 执行公式
+        /// </summary>
+        /// <param name="dataContext">可按行列坐标提供数据的数据Provider，如：ExcelDataContext/DefaultDataContext</param>
+        /// <returns></returns>
         public object Invoke(IDataContext? dataContext)
         {
             if (Exp.NodeType == ExpressionType.Call)

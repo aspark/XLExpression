@@ -32,6 +32,10 @@ namespace XLExpression.Excel
             _excel = model;
         }
 
+        /// <summary>
+        /// 抽取所有公式
+        /// </summary>
+        /// <returns></returns>
         public List<FormulaInfo> ExtractAllFormula()
         {
             var items = new List<FormulaInfo>();
@@ -61,6 +65,12 @@ namespace XLExpression.Excel
             return ExtractAllFormula().Select(p => (p.Formula, ExpressionBuilder.Instance.BuildToCode(p.Formula))).ToList();
         }
 
+        /// <summary>
+        /// 计算所有公式
+        /// </summary>
+        /// <param name="saveToExcel">是否保存回excel</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException">计算的结果</exception>
         public List<FormulaCalculateResult> CalculateAll(bool saveToExcel = false)
         {
             var result = new List<FormulaCalculateResult>();
