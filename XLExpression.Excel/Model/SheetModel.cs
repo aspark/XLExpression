@@ -86,7 +86,7 @@ namespace XLExpression.Excel.Model
 
         public RowsCollection Rows { get; private set; }
 
-        public bool HasChanged { get; internal set; }
+        //public bool HasChanged { get; internal set; }
 
         private Dictionary<uint, (string formula, ExcelCellPostion position)> _dicSharedFormula = new Dictionary<uint, (string formula, ExcelCellPostion position)>();
 
@@ -143,6 +143,7 @@ namespace XLExpression.Excel.Model
             }
             set
             {
+                value.Index = row;
                 _rows.AddOrUpdate(row, value, (k, o) => value);
                 if (row > MaxIndex)
                     MaxIndex = row;

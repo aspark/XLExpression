@@ -105,6 +105,9 @@ namespace XLExpression.Excel.Model
 
         public RowModel Row { get; private set; }
 
+        public int ColIndex { get; internal set; }
+        public int RowIndex => Row.Index;
+
         private object? _value = null;
         public object? Value
         {

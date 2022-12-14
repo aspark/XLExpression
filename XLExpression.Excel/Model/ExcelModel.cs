@@ -77,6 +77,19 @@ namespace XLExpression.Excel.Model
             xWorkbookPart.GetPartsOfType<StylesPart>();
         }
 
+
+        //public void ParseCalcChain()
+        //{
+        //    var calcpart = _xDoc.WorkbookPart.GetPartsOfType<CalculationChainPart>().FirstOrDefault();
+
+        //}
+
+        public void Save()
+        {
+            _xDoc.Save();
+        }
+
+
         public void Dispose()
         {
             _xDoc?.Dispose();

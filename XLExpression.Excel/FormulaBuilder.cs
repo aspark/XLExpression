@@ -1,69 +1,119 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office2016.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
+using XLExpression.Common;
 using XLExpression.Excel.Model;
-[assembly:InternalsVisibleToAttribute("XLExpression.Excel.Test")]
+[assembly: InternalsVisibleToAttribute("XLExpression.Excel.Test")]
 
 namespace XLExpression.Excel
 {
     public class FormulaBuilder
     {
-        ExcelModel excel = null;
+        ExcelModel _excel = null;
 
         public FormulaBuilder(string fileName)
         {
-            excel = new ExcelModel(fileName);
+            _excel = new ExcelModel(fileName);
         }
 
         public FormulaBuilder(Stream xlsx)
         {
-            excel = new ExcelModel(xlsx);
+            _excel = new ExcelModel(xlsx);
         }
 
-        public Dictionary<string, string> ExtractAllFormulaToCode()
+        public FormulaBuilder(ExcelModel model)
         {
-            var dic = new Dictionary<string, string>();
-
-            foreach(var sheet in excel.Sheets)
-            {
-                foreach(var row in sheet.Rows)
-                {
-                    foreach(var cell in row.Cells)
-                    {
-                        if(cell.ValueType == EnumCellType.Formula)
-                        {
-                            dic[cell.Formula] = ExpressionBuilder.Instance.BuildToCode(cell.Formula);
-                        }
-                    }
-                }
-            }
-
-            return dic;
+            _excel = model;
         }
 
-        public void CalculateAll()
+        public List<FormulaInfo> ExtractAllFormula()
         {
-            foreach (var sheet in excel.Sheets)
+            var items = new List<FormulaInfo>();
+
+            var sheetIndex = 0;
+            foreach (var sheet in _excel.Sheets)
             {
                 foreach (var row in sheet.Rows)
                 {
                     foreach (var cell in row.Cells)
                     {
-                        if (cell.ValueType == EnumCellType.Formula)
+                        if (cell.ValueType == EnumCellType.Formula && string.IsNullOrEmpty(cell.Formula) == false)
                         {
-                            
+                            items.Add(new FormulaInfo() { Formula = cell.Formula, SheetIndex = sheetIndex, SheetName = sheet.Name, ColIndex = cell.ColIndex, RowIndex = cell.RowIndex});
                         }
                     }
                 }
+
+                sheetIndex++;
             }
 
+            return items;
         }
 
-        public void Calculate()
+        public List<(string Formula, string Code)> ExtractAllFormulaToCode()
         {
-
+            return ExtractAllFormula().Select(p => (p.Formula, ExpressionBuilder.Instance.BuildToCode(p.Formula))).ToList();
         }
+
+        public List<FormulaCalculateResult> CalculateAll(bool saveToExcel = false)
+        {
+            var result = new List<FormulaCalculateResult>();
+
+            var calcChain = new Dictionary<string , FormulaRelationInfo>();
+
+            ExtractAllFormula().ForEach(i =>
+            {
+                calcChain[ExcelHelper.ConvertIndexToName(i.SheetName, i.ColIndex, i.RowIndex)] = new FormulaRelationInfo(i, ExpressionBuilder.Instance.Build(i.Formula));
+            });
+
+            if (calcChain.Any())
+            {
+                //建依赖
+                foreach(var item in calcChain)
+                {
+                    if (item.Value.Expression.ArgNames != null)
+                    {
+                        foreach (var arg in item.Value.Expression.ArgNames)
+                        {
+                            var key = ExcelHelper.EnsureSheetName(item.Value.SheetName, arg.Replace("$", ""));//统一去掉绝对定位
+
+                            if (calcChain.ContainsKey(key))
+                            {
+                                item.Value.Relation.Add(calcChain[key]);
+                            }
+                        }
+                    }
+                }
+
+                //按依赖的情况，调用
+                var dicContext = new Dictionary<int, ExcelDataContext>();
+                var hasChanged = false;
+                foreach(var calc in calcChain.OrderBy(c => c.Value.RelationCount))
+                {
+                    //_excel.Sheets[calc.Value.SheetIndex].Rows[calc.Value]
+                    var obj = calc.Value.Expression.Invoke(dicContext.GetOrAdd(calc.Value.SheetIndex, () => new ExcelDataContext(_excel.Sheets[calc.Value.SheetIndex])));
+                    result.Add(new FormulaCalculateResult() { ColIndex = calc.Value.ColIndex, SheetIndex = calc.Value.SheetIndex, Formula = calc.Value.Formula, Result = obj, RowIndex = calc.Value.RowIndex });
+                    if (saveToExcel)
+                    {
+                        hasChanged = true;
+                        _excel.Sheets[calc.Value.SheetIndex].Rows[calc.Value.RowIndex].Cells[calc.Value.ColIndex].Value = obj;
+                    }
+                }
+
+                if (hasChanged && saveToExcel)
+                {
+                    _excel.Save();
+                }
+            }
+
+            return result;
+        }
+
     }
 }

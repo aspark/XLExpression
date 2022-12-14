@@ -55,7 +55,7 @@ namespace XLExpression.Excel.Model
 
         public CellsCollection Cells { get; private set; }
 
-        //Height
+        public int Index { get; internal set; }
     }
 
     public class CellsCollection : IEnumerable<CellModel>
@@ -84,6 +84,7 @@ namespace XLExpression.Excel.Model
             }
             set
             {
+                value.ColIndex = col;
                 _cells.AddOrUpdate(col, value, (k, o) => value);
                 if (col > MaxIndex)
                     MaxIndex = col;

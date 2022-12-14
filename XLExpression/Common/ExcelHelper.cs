@@ -85,6 +85,19 @@ namespace XLExpression.Common
             return ConvertIndexToName(col) + (row + 1);
         }
 
+        public static string ConvertIndexToName(string? sheetName, int col, int row)
+        {
+            return (sheetName??"Sheet") + "!" + ConvertIndexToName(col) + (row + 1);
+        }
+
+        public static string EnsureSheetName(string? sheetName, string name)
+        {
+            if (name.Contains('!') == false)
+                return (sheetName ?? "Sheet") + "!" + name;
+
+            return name;
+        }
+
         /// <summary>
         /// 将数字转为Excel字符坐标
         /// </summary>

@@ -36,7 +36,7 @@ namespace XLExpression.Functions.Impl
                 {
                     object?[,] getRange(string name)
                     {
-                        var pos = name.Replace("$", "").Split(":").Select(ExcelHelper.ConvertNameToPosition).ToArray();
+                        var pos = name.Split(":").Select(ExcelHelper.ConvertNameToPosition).ToArray(); //.Replace("$", "")
                         var start = pos.First();
                         var end = pos.Last();
 

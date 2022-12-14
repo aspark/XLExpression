@@ -137,8 +137,9 @@ namespace XLExpression
                     || termName.Equals("NamedRangeCombinationToken", StringComparison.InvariantCultureIgnoreCase)
                     )
                 {
+                    //todo 处理prefix
                     //参数
-                    return new RefNode() { Name = xlNode.Token.Text };
+                    return new RefNode() { Name = xlNode.Token.Text.Replace("$", "") };//统一去掉绝对引用符，因为不影响计算
                 }
                 else if(termName.Equals("BoolToken", StringComparison.InvariantCultureIgnoreCase))
                 {

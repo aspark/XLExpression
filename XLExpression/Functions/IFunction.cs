@@ -16,7 +16,7 @@ namespace XLExpression.Functions
 
 
     /// <summary>
-    /// 传入的是地址引用参数,哪：F2
+    /// 传入的是地址引用参数,如：F2
     /// </summary>
     internal class FuncRefArg
     {
@@ -58,7 +58,7 @@ namespace XLExpression.Functions
 
                 if (arg is FuncRefArg refArg)
                 {
-                    var name = refArg.Name.Replace("$", "");//remove $
+                    var name = refArg.Name;//remove $ .Replace("$", "")
 
                     unWrapped[i] = dataContext[name];
                 }
