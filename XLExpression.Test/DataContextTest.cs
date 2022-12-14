@@ -5,7 +5,7 @@ using XLParser;
 
 namespace XLExpression.Test
 {
-    public class FunctionDataContextTest
+    public class DataContextTest
     {
         [Fact]
         public void ExcelNameTest()
@@ -23,13 +23,29 @@ namespace XLExpression.Test
             context["F2"].ShouldBe(11);
             context["G3"].ShouldBe(22);
 
-            context[(1, 1)].ShouldBe(null);
-            context[(5, 1)].ShouldBe(11);
-            context[(6, 2)].ShouldBe(22);
+            context[ExcelCellPostion.Create(1, 1)].ShouldBe(null);
+            context[ExcelCellPostion.Create(5, 1)].ShouldBe(11);
+            context[ExcelCellPostion.Create(6, 2)].ShouldBe(22);
 
-            var result = context["F:F"];
+            var result = context["F2:G3"];
             (result is object[,]).ShouldBe(true);
-            ((object[,])result).GetLength(0).ShouldBe(3);
+            ((object[,])result!).GetLength(0).ShouldBe(2);
+            ((object[,])result).GetLength(1).ShouldBe(2);
+            ((object[,])result)[0, 1].ShouldBe(21);
+            ((object[,])result)[1, 0].ShouldBe(12);
+            ((object[,])result)[1, 1].ShouldBe(22);
+
+            result = context[ExcelCellPostion.Create(5, 1), 2, 2];
+            (result is object[,]).ShouldBe(true);
+            ((object[,])result!).GetLength(0).ShouldBe(2);
+            ((object[,])result).GetLength(1).ShouldBe(2);
+            ((object[,])result)[0, 1].ShouldBe(21);
+            ((object[,])result)[1, 0].ShouldBe(12);
+            ((object[,])result)[1, 1].ShouldBe(22);
+
+            result = context["F:F"];
+            (result is object[,]).ShouldBe(true);
+            ((object[,])result!).GetLength(0).ShouldBe(3);
             ((object[,])result).GetLength(1).ShouldBe(1);
             ((object[,])result)[0, 0].ShouldBe(null);
             ((object[,])result)[1, 0].ShouldBe(11);
@@ -37,7 +53,7 @@ namespace XLExpression.Test
 
             result = context["F:G"];
             (result is object[,]).ShouldBe(true);
-            ((object[,])result).GetLength(0).ShouldBe(3);
+            ((object[,])result!).GetLength(0).ShouldBe(3);
             ((object[,])result).GetLength(1).ShouldBe(2);
             ((object[,])result)[0, 1].ShouldBe(null);
             ((object[,])result)[1, 0].ShouldBe(11);
@@ -46,14 +62,14 @@ namespace XLExpression.Test
 
             result = context["2:2"];
             (result is object[,]).ShouldBe(true);
-            ((object[,])result).GetLength(0).ShouldBe(1);
+            ((object[,])result!).GetLength(0).ShouldBe(1);
             ((object[,])result).GetLength(1).ShouldBe(8);
             ((object[,])result)[0, 1].ShouldBe(null);
             ((object[,])result)[0, 6].ShouldBe(21);
 
             result = context["2:3"];
             (result is object[,]).ShouldBe(true);
-            ((object[,])result).GetLength(0).ShouldBe(2);
+            ((object[,])result!).GetLength(0).ShouldBe(2);
             ((object[,])result).GetLength(1).ShouldBe(8);
             ((object[,])result)[1, 1].ShouldBe(null);
             ((object[,])result)[0, 6].ShouldBe(21);
@@ -64,7 +80,7 @@ namespace XLExpression.Test
             context["F:F"] = 1;
             result = context["F:F"];
             (result is object[,]).ShouldBe(true);
-            ((object[,])result).GetLength(0).ShouldBe(3);
+            ((object[,])result!).GetLength(0).ShouldBe(3);
             ((object[,])result).GetLength(1).ShouldBe(1);
             ((object[,])result)[0, 0].ShouldBe(1);
             ((object[,])result)[1, 0].ShouldBe(1);
@@ -73,7 +89,7 @@ namespace XLExpression.Test
             context["2:3"] = 2;
             result = context["2:3"];
             (result is object[,]).ShouldBe(true);
-            ((object[,])result).GetLength(0).ShouldBe(2);
+            ((object[,])result!).GetLength(0).ShouldBe(2);
             ((object[,])result).GetLength(1).ShouldBe(8);
             ((object[,])result)[1, 1].ShouldBe(2);
             ((object[,])result)[0, 6].ShouldBe(2);

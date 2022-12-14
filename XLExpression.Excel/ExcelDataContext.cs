@@ -80,8 +80,8 @@ namespace XLExpression.Excel
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row!.Value - range[0].Row!.Value + 1 : RowCount;//行数
-                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col!.Value - range[0].Col!.Value + 1 : ColCount;//列数
+                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row!.Value - range[0].Row!.Value + 1 : RowCount(range[0].File, range[0]!.SheetName);//行数
+                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col!.Value - range[0].Col!.Value + 1 : ColCount(range[0].File, range[0]!.SheetName);//列数
 
                     return this[range[0], rowCount, colCount];
                 }
@@ -114,7 +114,7 @@ namespace XLExpression.Excel
                 }
                 else if (position.Col.HasValue)
                 {
-                    var colData = new object?[RowCount, 1];
+                    var colData = new object?[RowCount(position.File, position.SheetName), 1];
                     for (var rowIndex = 0; rowIndex < colData.GetLength(0); rowIndex++)
                     {
                         colData[rowIndex, 0] = GetSheet(position.File, position.SheetName).Rows[rowIndex]?.Cells[position.Col.Value]?.Value;
@@ -147,20 +147,20 @@ namespace XLExpression.Excel
         }
 
 
-        public int RowCount
+        public int RowCount(string? file, string? sheetName)
         {
-            get
-            {
-                return GetSheet().Rows.Count;
-            }
+            if(GetSheet(file, sheetName).Rows.Any())
+                return GetSheet(file, sheetName).Rows.MaxIndex + 1;
+
+            return 0;
         }
 
-        public int ColCount
+        public int ColCount(string? file, string? sheetName)
         {
-            get
-            {
-                return GetSheet().ColumnNames.Count;
-            }
+            if(GetSheet(file, sheetName).Rows.Any())
+                return GetSheet(file, sheetName).Rows.Max(r => r.Cells.MaxIndex) + 1;
+
+            return 0;
         }
 
         public void Dispose()

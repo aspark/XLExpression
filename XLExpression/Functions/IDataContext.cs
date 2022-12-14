@@ -28,9 +28,9 @@ namespace XLExpression.Functions
 
         //object?[,] this[int rowStart, int rowCount, int colStart, int colCount] { get; }
 
-        int RowCount { get; }
+        //int RowCount { get; }
 
-        int ColCount { get; }
+        //int ColCount { get; }
     }
 
     public class DefaultDataContext : IDataContext

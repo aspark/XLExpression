@@ -132,14 +132,15 @@ namespace XLExpression.Excel.Model
             _xSheet = xSheet;
         }
 
-        public RowModel this[int row]
+        public RowModel? this[int row]
         {
             get
             {
                 if (_rows.TryGetValue(row, out var value))
                     return value;
 
-                throw new IndexOutOfRangeException("row index out of range");
+                //throw new IndexOutOfRangeException("row index out of range");
+                return null;
             }
             set
             {

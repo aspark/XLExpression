@@ -102,7 +102,14 @@ namespace XLExpression.Excel
                     if (saveToExcel)
                     {
                         hasChanged = true;
-                        _excel.Sheets[calc.Value.SheetIndex].Rows[calc.Value.RowIndex].Cells[calc.Value.ColIndex].Value = obj;
+                        var cell = _excel.Sheets[calc.Value.SheetIndex].Rows[calc.Value.RowIndex]?.Cells[calc.Value.ColIndex];
+                        if(cell != null)
+                            cell.Value = obj;
+                        else
+                        {
+                            //todo add cell
+                            throw new NotImplementedException("add cell");
+                        }
                     }
                 }
 

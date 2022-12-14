@@ -72,15 +72,15 @@ namespace XLExpression.Excel.Model
             _xRow = xRow;
         }
 
-        public CellModel this[int col]
+        public CellModel? this[int col]
         {
             get
             {
                 if (_cells.TryGetValue(col, out var value))
                     return value;
 
-                //return null;
-                throw new IndexOutOfRangeException("columns out of range");
+                //throw new IndexOutOfRangeException("columns out of range");
+                return null;
             }
             set
             {
