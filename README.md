@@ -9,9 +9,18 @@ download release or see https://www.nuget.org/packages/XLExpression
 
 # Usage
 
+## 1. parse formula to expression and execute
+
 ```C#
 var exp = ExpressionBuilder.Instance.Build("IF(F2>G2,1,0)");
 var result = exp.Invoke(new { F2 = 1, G2 = 0 });
+```
+
+## 2. parse excel file and execute all formula
+
+```C#
+var builder = new FormulaBuilder("Attachments/XLExpression.xlsx");
+var result = builder.CalculateAll();
 ```
 
 # Develop
@@ -54,3 +63,5 @@ has implemented:
 | PercentRank      |                                           |
 | PercentRank.Inc  |                                           |
 | PercentRank.Exc  |                                           |
+| Max              |                                           |
+| Min              |                                           |
