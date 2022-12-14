@@ -140,6 +140,7 @@ namespace XLExpression
             }
             else if (xlNode.Term.Name.Equals("Reference", StringComparison.InvariantCultureIgnoreCase))//SUM([工作簿1.xlsx]Sheet1!B5,2, B2)
             {
+                //处理prefix
                 return new RefNode() { Name = xlNode.Print().Replace("$", "") };//统一去掉绝对引用符，因为不影响计算
             }
             else if (xlNode.Token != null)
@@ -152,7 +153,6 @@ namespace XLExpression
                     || termName.Equals("NamedRangeCombinationToken", StringComparison.InvariantCultureIgnoreCase)
                     )
                 {
-                    //todo 处理prefix
                     //参数
                     return new RefNode() { Name = xlNode.Token.Text.Replace("$", "") };//统一去掉绝对引用符，因为不影响计算
                 }
