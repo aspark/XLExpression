@@ -40,12 +40,12 @@ namespace XLExpression.Functions.Impl
                         var start = pos.First();
                         var end = pos.Last();
 
-                        var rowStart = start.Row ?? 0;
-                        var colStart = start.Col ?? 0;
+                        //var rowStart = start.Row ?? 0;
+                        //var colStart = start.Col ?? 0;
                         var rowCount = rangeRows;// end.Row.HasValue ? end.Row.Value - rowStart + 1 : dataContext.RowCount;
                         var colCount = rangeCols;// end.Col.HasValue ? end.Col.Value - colStart + 1 : dataContext.ColCount;
 
-                        return dataContext[rowStart, rowCount, colStart, colCount];
+                        return dataContext[start, rowCount, colCount];
                     }
 
                     if(oldArgs[2] is FuncRefArg refArg)

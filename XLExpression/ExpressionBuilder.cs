@@ -47,6 +47,12 @@ namespace XLExpression
             return Build(ConvertToNode(formula), ref names)?.ToString() ?? "";
         }
 
+        /// <summary>
+        /// 转为表达式树
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         private Expression? Build(ExpressionNode? node, ref Dictionary<string, ParameterExpression> parameters)
         {
             if (node != null)
@@ -87,7 +93,12 @@ namespace XLExpression
 
         public static ExpressionBuilder Instance => new ExpressionBuilder();
 
-
+        /// <summary>
+        /// 将xlparse的结果简化结构
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         internal ExpressionNode? ConvertToNode(string formula)
         {
             if (formula != null)
@@ -126,6 +137,10 @@ namespace XLExpression
                 }
 
                 return node;
+            }
+            else if (xlNode.Term.Name.Equals("Reference", StringComparison.InvariantCultureIgnoreCase))//SUM([工作簿1.xlsx]Sheet1!B5,2, B2)
+            {
+                return new RefNode() { Name = xlNode.Print().Replace("$", "") };//统一去掉绝对引用符，因为不影响计算
             }
             else if (xlNode.Token != null)
             {

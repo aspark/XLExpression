@@ -8,7 +8,7 @@ namespace XLExpression.Common
     public class ExcelHelper
     {
         private static List<char> colNames = new List<char> { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-        private static Regex _regCellA1Name = new Regex(@"(?<col>[A-Z]*)(?<row>[0-9]*)");//A1
+        private static Regex _regCellA1Name = new Regex(@"(\[(?<file>.+)\])?((?<sheet>.+)\!)?\$?(?<col>[A-Z]*)\$?(?<row>[0-9]*)");//A1 //[工作簿1.xlsx]Sheet1!B5,2
         //private static Regex _regCellR1C1Name = new Regex(@"(R\[?(?<col>\-?[0-9]+)\]?)?(C\[?(?<row>\-?[0-9]+)\]?)?");//R1C1
 
         /// <summary>
@@ -16,17 +16,22 @@ namespace XLExpression.Common
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ExcelCellPostion ConvertNameToPosition(string? name)
+        public static ExcelCellPostion ConvertNameToPosition(string? name) 
         {
             if (string.IsNullOrWhiteSpace(name))
-                return (null, null);
+                return ExcelCellPostion.Empty;
 
             //var chars = new char[]
             var m = _regCellA1Name.Match(name);
+            string? file = null;
+            string? sheetName = null;
             int? col = null;
             int? row = null;
             if (m.Success)
             {
+                file = m.Groups["file"].Value;
+                sheetName = m.Groups["sheet"].Value;
+
                 var colName = m.Groups["col"].Value;
                 if (!string.IsNullOrWhiteSpace(colName))
                 {
@@ -71,7 +76,7 @@ namespace XLExpression.Common
             //    }
             //}
 
-            return (col, row);
+            return new ExcelCellPostion(file, sheetName, col, row);
         }
 
         /// <summary>
@@ -124,16 +129,33 @@ namespace XLExpression.Common
 
     public struct ExcelCellPostion
     {
+        public string? File;
+        public string? SheetName;
         public int? Col;
         public int? Row;
-        public Boolean IsRelative;
+        public bool IsRelative;
 
         public ExcelCellPostion(int? col, int? row)
         {
+            File = null;
+            SheetName = null;
             Col = col;
             Row = row;
             IsRelative = false;
         }
+
+        public ExcelCellPostion(string? file, string? sheetName, int? col, int? row)
+        {
+            File = file;
+            SheetName = sheetName;
+            Col = col;
+            Row = row;
+            IsRelative = false;
+        }
+
+        public static ExcelCellPostion Empty { get; } = new ExcelCellPostion();
+
+        public static ExcelCellPostion Create(int col, int row) => new ExcelCellPostion(null, null, col, row);
 
         //public override bool Equals(object? obj)
         //{
@@ -153,10 +175,10 @@ namespace XLExpression.Common
             row = Row;
         }
 
-        public static implicit operator (int? Col, int? Row)(ExcelCellPostion value)
-        {
-            return (value.Col, value.Row);
-        }
+        //public static implicit operator (int? Col, int? Row)(ExcelCellPostion value)
+        //{
+        //    return (value.Col, value.Row);
+        //}
 
         public static implicit operator ExcelCellPostion((int? Col, int? Row) value)
         {

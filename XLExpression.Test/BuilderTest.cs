@@ -12,9 +12,9 @@ namespace XLExpression.Test
 
             node.ShouldNotBeNull();
             node.Type.ShouldBe(NodeType.Function);
-            (node as FunctionNode).Name.ShouldBe("+");
-            (node as FunctionNode).Arguments.Count.ShouldBe(2);
-            (node as FunctionNode).Arguments[1].Type.ShouldBe(NodeType.Const);
+            (node as FunctionNode)!.Name.ShouldBe("+");
+            (node as FunctionNode)!.Arguments.Count.ShouldBe(2);
+            (node as FunctionNode)!.Arguments[1]!.Type.ShouldBe(NodeType.Const);
         }
 
         [Fact]
@@ -24,9 +24,25 @@ namespace XLExpression.Test
 
             node.ShouldNotBeNull();
             node.Type.ShouldBe(NodeType.Function);
-            (node as FunctionNode).Name.ShouldBe("if", StringCompareShould.IgnoreCase);
-            (node as FunctionNode).Arguments.Count.ShouldBe(3);
-            (node as FunctionNode).Arguments[0].Type.ShouldBe(NodeType.Function);
+            (node as FunctionNode)!.Name.ShouldBe("if", StringCompareShould.IgnoreCase);
+            (node as FunctionNode)!.Arguments.Count.ShouldBe(3);
+            (node as FunctionNode)!.Arguments[0]!.Type.ShouldBe(NodeType.Function);
+            ((node as FunctionNode)!.Arguments[0] as FunctionNode)!.Arguments[0]!.Type.ShouldBe(NodeType.Ref);
+            (((node as FunctionNode)!.Arguments[0] as FunctionNode)!.Arguments[0]! as RefNode)!.Name.ShouldBe("F2");
+        }
+
+        [Fact]
+        public void ConvertToNodeTest3()
+        {
+            var node = ExpressionBuilder.Instance.ConvertToNode("IF(Sheet1!$F$2>G2,1,0)");
+
+            node.ShouldNotBeNull();
+            node.Type.ShouldBe(NodeType.Function);
+            (node as FunctionNode)!.Name.ShouldBe("if", StringCompareShould.IgnoreCase);
+            (node as FunctionNode)!.Arguments.Count.ShouldBe(3);
+            (node as FunctionNode)!.Arguments[0]!.Type.ShouldBe(NodeType.Function);
+            ((node as FunctionNode)!.Arguments[0] as FunctionNode)!.Arguments[0]!.Type.ShouldBe(NodeType.Ref);
+            (((node as FunctionNode)!.Arguments[0] as FunctionNode)!.Arguments[0]! as RefNode)!.Name.ShouldBe("Sheet1!F2");
         }
 
         [Fact]

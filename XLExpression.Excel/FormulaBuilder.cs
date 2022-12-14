@@ -97,7 +97,7 @@ namespace XLExpression.Excel
                 foreach(var calc in calcChain.OrderBy(c => c.Value.RelationCount))
                 {
                     //_excel.Sheets[calc.Value.SheetIndex].Rows[calc.Value]
-                    var obj = calc.Value.Expression.Invoke(dicContext.GetOrAdd(calc.Value.SheetIndex, () => new ExcelDataContext(_excel.Sheets[calc.Value.SheetIndex])));
+                    var obj = calc.Value.Expression.Invoke(dicContext.GetOrAdd(calc.Value.SheetIndex, () => new ExcelDataContext(_excel, calc.Value.SheetIndex)));
                     result.Add(new FormulaCalculateResult() { ColIndex = calc.Value.ColIndex, SheetIndex = calc.Value.SheetIndex, Formula = calc.Value.Formula, Result = obj, RowIndex = calc.Value.RowIndex });
                     if (saveToExcel)
                     {

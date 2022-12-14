@@ -23,9 +23,9 @@ namespace XLExpression.Test
             context["F2"].ShouldBe(11);
             context["G3"].ShouldBe(22);
 
-            context[1, 1].ShouldBe(null);
-            context[1, 5].ShouldBe(11);
-            context[2, 6].ShouldBe(22);
+            context[(1, 1)].ShouldBe(null);
+            context[(5, 1)].ShouldBe(11);
+            context[(6, 2)].ShouldBe(22);
 
             var result = context["F:F"];
             (result is object[,]).ShouldBe(true);

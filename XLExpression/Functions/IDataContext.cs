@@ -6,6 +6,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using XLExpression.Common;
@@ -19,13 +20,17 @@ namespace XLExpression.Functions
     {
         object? this[string name] { get; }
 
-        object? this[int row, int col] { get; }
+        object? this[ExcelCellPostion position] { get; }
+
+        object?[,] this[ExcelCellPostion start, int rowCount, int colCount] { get; }
+
+        //object? this[int row, int col] { get; }
+
+        //object?[,] this[int rowStart, int rowCount, int colStart, int colCount] { get; }
 
         int RowCount { get; }
 
         int ColCount { get; }
-
-        object?[,] this[int rowStart, int rowCount, int colStart, int colCount] { get; }
     }
 
     public class DefaultDataContext : IDataContext
@@ -71,36 +76,75 @@ namespace XLExpression.Functions
             }
         }
 
-        public object? this[int row, int col]
+        public object? this[ExcelCellPostion position]
         {
             get
             {
-                var rowData = this[row];
-                if(rowData != null)
+                if (position.Row.HasValue && position.Col.HasValue)
                 {
-                    return rowData[col];
+                    return this[position.Row!.Value]?[position.Col!.Value];
+                }
+                else if (position.Row.HasValue)
+                {
+                    var row = this[position.Row.Value];
+
+                    var allData = row?.AllData;
+
+                    return allData?.Dimensional();
+
+                }
+                else if (position.Col.HasValue)
+                {
+                    var colData = new object?[RowCount, 1];
+                    for (var rowIndex = 0; rowIndex < colData.GetLength(0); rowIndex++)
+                    {
+                        colData[rowIndex, 0] = this[rowIndex]?[position.Col.Value];
+                    }
                 }
 
                 return null;
             }
             set
             {
-                var rowData = _rows.GetOrAdd(row, (k) => new FunctionDataRow());
-                rowData[col] = value;
+
+                if (position.Row.HasValue && position.Col.HasValue)
+                {
+                    var rowData = _rows.GetOrAdd(position.Row!.Value, (k) => new FunctionDataRow());
+                    rowData[position.Col!.Value] = value;
+                }
+                else if (position.Row.HasValue)
+                {
+                    var row = this[position.Row.Value];
+                    for (var colIndex = 0; colIndex < ColCount; colIndex++)
+                    {
+                        row[colIndex] = value;
+                    }
+                }
+                else if (position.Col.HasValue)
+                {
+                    for (var rowIndex = 0; rowIndex < RowCount; rowIndex++)
+                    {
+                        this[rowIndex][position.Col.Value] = value;
+                    }
+                }
             }
         }
 
-        public object?[,] this[int rowStart, int rowCount, int colStart, int colCount]
+        public object?[,] this[ExcelCellPostion start, int rowCount, int colCount]
         {
             get
             {
                 var datas = new object?[rowCount, colCount];
+
+                var startRow = start.Row.HasValue ? start.Row!.Value : 0;
+                var startCol = start.Col.HasValue ? start.Col!.Value : 0;
+
                 for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
                 {
-                    var row = this[rowStart + rowIndex];
+                    var row = this[startRow + rowIndex];
                     for (var colIndex = 0; colIndex < colCount; colIndex++)
                     {
-                        datas[rowIndex, colIndex] = row?[colStart + colIndex];
+                        datas[rowIndex, colIndex] = row?[startCol + colIndex];
                     }
                 }
 
@@ -115,37 +159,16 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row.Value - range[0].Row.Value + 1 : RowCount;//行数
-                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col.Value - range[0].Col.Value + 1 : ColCount;//列数
+                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row!.Value - range[0].Row!.Value + 1 : RowCount;//行数
+                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col!.Value - range[0].Col!.Value + 1 : ColCount;//列数
 
-                    return this[range[0].Row ?? 0, rowCount, range[0].Col ?? 0, colCount];
+                    return this[range[0], rowCount, colCount];
                 }
                 else
                 {
                     var index = ExcelHelper.ConvertNameToPosition(name);
-                    if(index.Row.HasValue && index.Col.HasValue)
-                    {
-                        return this[index.Row.Value, index.Col.Value];
-                    }
-                    else if (index.Row.HasValue)
-                    {
-                        var row = this[index.Row.Value];
 
-                        var allData = row.AllData;
-
-                        return allData.Dimensional();
-                        
-                    }
-                    else if (index.Col.HasValue)
-                    {
-                        var colData = new object?[RowCount, 1];
-                        for (var rowIndex = 0; rowIndex < colData.GetLength(0); rowIndex++)
-                        {
-                            colData[rowIndex, 0] = this[rowIndex]?[index.Col.Value];
-                        }
-                    }
-
-                    return null;
+                    return this[index];
                 }
             }
             set
@@ -153,8 +176,8 @@ namespace XLExpression.Functions
                 if (name.Contains(':'))//引用的是区域/is range A2:C5
                 {
                     var range = name.Split(':').Select(ExcelHelper.ConvertNameToPosition).ToArray();
-                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row.Value - range[0].Row.Value + 1 : this.RowCount;//行数
-                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col.Value - range[0].Col.Value + 1 : this.ColCount;//列数
+                    var rowCount = range[1].Row.HasValue && range[0].Row.HasValue ? range[1].Row!.Value - range[0].Row!.Value + 1 : this.RowCount;//行数
+                    var colCount = range[1].Col.HasValue && range[0].Col.HasValue ? range[1].Col!.Value - range[0].Col!.Value + 1 : this.ColCount;//列数
 
                     var rowStart = range[0].Row ?? 0;
                     var colStart = range[0].Col ?? 0;
@@ -171,25 +194,8 @@ namespace XLExpression.Functions
                 else
                 {
                     var index = ExcelHelper.ConvertNameToPosition(name);
-                    if(index.Row.HasValue && index.Col.HasValue)
-                    {
-                        this[index.Row.Value, index.Col.Value] = value;
-                    }
-                    else if (index.Row.HasValue)
-                    {
-                        var row = this[index.Row.Value];
-                        for (var colIndex = 0; colIndex < ColCount; colIndex++)
-                        {
-                            row[colIndex] = value;
-                        }
-                    }
-                    else if (index.Col.HasValue)
-                    {
-                        for (var rowIndex = 0; rowIndex < RowCount; rowIndex++)
-                        {
-                            this[rowIndex][index.Col.Value] = value;
-                        }
-                    }
+
+                    this[index] = value;
                 }
             }
         }

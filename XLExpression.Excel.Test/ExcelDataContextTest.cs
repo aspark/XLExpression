@@ -8,7 +8,7 @@ namespace XLExpression.Excel.Test
         public void Excel()
         {
             var xls = new ExcelModel("Attachments/XLExpression.xlsx");
-            var ctx = new ExcelDataContext(xls.Sheets[0]);
+            var ctx = new ExcelDataContext(xls, 0);
 
             ctx.ShouldNotBeNull();
 
