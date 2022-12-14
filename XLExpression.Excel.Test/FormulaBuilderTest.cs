@@ -35,7 +35,7 @@ namespace XLExpression.Excel.Test
 
             foreach(var info in result)
             {
-                info.Result.ShouldBe(excel.Sheets[info.SheetIndex].Rows[info.RowIndex].Cells[info.ColIndex].Value);//验证计算结果与文件中的一致
+                info.Result.ShouldBe(excel.Sheets[info.SheetIndex]?.Rows[info.RowIndex]?.Cells[info.ColIndex]?.Value);//验证计算结果与文件中的一致
             }
         }
     }
